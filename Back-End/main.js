@@ -3,9 +3,10 @@ const app = express()
 require(`dotenv`).config()
 const port = process.env.PORT
 
-app.get('/hi', (req, res) => {
-    res.json({ hi: `hi` })
-})
+// Get All Routes
+const income = require(`./routes/income`)
+
+app.use(`/income`, income)
 
 app.listen(port, () => {
     console.log(`listening at port ${port}`)
