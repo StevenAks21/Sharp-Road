@@ -2,17 +2,22 @@ const express = require(`express`)
 const app = express()
 require(`dotenv`).config()
 const port = process.env.PORT
-const employees = require("./routes/employees")
 
+
+// Get Middleware
 app.use(express.json())
-
+const checkToken = require(`./middleware/checkToken`)
 
 // Get All Routes
+const employees = require("./routes/employees")
 const income = require(`./routes/income`)
+const auth = require(`./routes/auth`)
 
-app.use(`/income`, income)
+app.use(`/income`, checkToken, income)
 
-app.use("/employees", employees)
+app.use(`/login`, auth)
+
+app.use("/employees", checkToken, employees)
 
 app.listen(port, () => {
     console.log(`listening at port ${port}`)

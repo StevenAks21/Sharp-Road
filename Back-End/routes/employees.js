@@ -4,11 +4,11 @@ const db = require("../db/db");
 
 router.post("/add", (req, res) => {
   if (!req.body) {
-    res.json({ error: true, message: "Body cannot be empty!" })
+    return res.json({ error: true, message: "Body cannot be empty!" })
   }
   const { name, hours_worked } = req.body;
   if (!name) {
-    res.json({ error: true, message: "Name cannot be empty!" });
+    return res.json({ error: true, message: "Name cannot be empty!" });
   }
 
   let statement;
@@ -23,19 +23,19 @@ router.post("/add", (req, res) => {
     result = db.prepare(statement).run(name, hours_worked)
   }
 
-  res.json({ error: false, result: result })
+  return res.json({ error: false, result: result })
 });
 
 router.get("/getall", (req, res) => {
   const statement = "SELECT * FROM employees"
   const result = db.prepare(statement).all()
-  res.json({ error: false, result: result })
+  return res.json({ error: false, result: result })
 })
 
 router.get("/get/:id", (req, res) => {
 
   if (!req.params.id) {
-    res.json({ error: true, message: `id is required in the parameter!` })
+    return res.json({ error: true, message: `id is required in the parameter!` })
   }
   const id = req.params.id
 
@@ -43,10 +43,10 @@ router.get("/get/:id", (req, res) => {
   const statement = "SELECT * FROM employees WHERE id = ?"
   const result = db.prepare(statement).get(id)
   if (!result) {
-    res.json({ error: true, message: `no employee was found with id ${id}` })
+    return res.json({ error: true, message: `no employee was found with id ${id}` })
   }
   else {
-    res.json({ error: false, result: result })
+    return res.json({ error: false, result: result })
   }
 
 })
@@ -69,7 +69,7 @@ router.delete('/delete', (req, res) => {
     return res.json({ error: true, message: `Failed to delete employee with id ${id}` });
   }
 
-  res.json({ error: false, message: `Successfully deleted employee with id ${id}` });
+  return res.json({ error: false, message: `Successfully deleted employee with id ${id}` });
 });
 
 
