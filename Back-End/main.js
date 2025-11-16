@@ -15,7 +15,7 @@ const auth = require(`./routes/auth`)
 
 app.use(`/income`, checkToken, income)
 
-app.use(`/login`, auth)
+app.use(`/auth`, auth)
 
 app.use("/employees", checkToken, employees)
 

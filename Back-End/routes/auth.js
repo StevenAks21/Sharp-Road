@@ -31,7 +31,19 @@ router.post("/", (req, res) => {
     });
 });
 
-router.get(`/whoami`, (req, res) => {
+router.get("/whoami", (req, res) => {
+    const auth = req.headers.authorization?.split(" ")[1];
+    if (!auth) return res.status(401).json({ error: true, message: "No token provided" });
 
-})
+    try {
+        const decoded = jwt.verify(auth, secret);
+        res.status(200).json({
+            error: false,
+            message: "Token valid",
+            user: decoded
+        });
+    } catch {
+        res.status(403).json({ error: true, message: "Invalid or expired token" });
+    }
+});
 module.exports = router
