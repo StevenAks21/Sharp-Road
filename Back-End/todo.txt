@@ -1,3 +1,0 @@
-// Add PUT to update hours worked in employees.js 
-// in db.js for employees add current pay, and total pay since they worked in the business, current pay will reset to 0
-in the beginning of each month
