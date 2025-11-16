@@ -33,11 +33,13 @@ function checkMonthlyReset() {
     console.log("🔄 Running monthly pay reset...");
     resetMonthlyPay();
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO metadata (key, value)
       VALUES ('last_reset', ?)
       ON CONFLICT(key) DO UPDATE SET value = excluded.value
-    `).run(thisMonthString);
+    `
+    ).run(thisMonthString);
   }
 }
 
@@ -57,7 +59,8 @@ CREATE TABLE IF NOT EXISTS employees (
   db.prepare(employeeStatement).run();
 
   // Trigger: set current_pay on INSERT
-  db.prepare(`
+  db.prepare(
+    `
 CREATE TRIGGER IF NOT EXISTS employees_set_current_pay_on_insert
 AFTER INSERT ON employees
 BEGIN
@@ -65,10 +68,12 @@ BEGIN
   SET current_pay = NEW.hours_worked * 7000
   WHERE id = NEW.id;
 END;
-`).run();
+`
+  ).run();
 
   // Trigger: update current_pay when hours_worked changes
-  db.prepare(`
+  db.prepare(
+    `
 CREATE TRIGGER IF NOT EXISTS employees_update_current_pay_on_hours_change
 AFTER UPDATE OF hours_worked ON employees
 BEGIN
@@ -76,7 +81,8 @@ BEGIN
   SET current_pay = NEW.hours_worked * 7000
   WHERE id = NEW.id;
 END;
-`).run();
+`
+  ).run();
 
   // Users table
   const userStatement = `
@@ -87,6 +93,17 @@ CREATE TABLE IF NOT EXISTS users (
 )
 `;
   db.prepare(userStatement).run();
+
+  // Income table
+  const incomeStatement = `CREATE TABLE IF NOT EXISTS income (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date TEXT NOT NULL UNIQUE,
+  cash INTEGER DEFAULT 0,
+  qris INTEGER DEFAULT 0,
+  fnb INTEGER DEFAULT 0,
+  total INTEGER DEFAULT 0,
+  notes TEXT 
+  )`;
 
   // Metadata table for bookkeeping (like last monthly reset)
   const metadataStatement = `
