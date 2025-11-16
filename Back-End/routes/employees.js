@@ -72,5 +72,29 @@ router.delete('/delete', (req, res) => {
   return res.json({ error: false, message: `Successfully deleted employee with id ${id}` });
 });
 
+router.put("/addhours", (req, res) => {
+
+  if(!req.body){
+    return res.status(400).json({error: true, message: 'Body must have id and hours!'})
+  }
+
+  const {id, hours} = req.body;
+  const checkStatement = "SELECT * FROM employees WHERE id = ?"
+  const result = db.prepare(checkStatement).get(id)
+
+  if(!result){
+   return res.status(404).json({error: true, message:"No employee was found with id " + id})
+  }
+
+  const addHoursStatement = `UPDATE employees SET hours_worked = hours_worked + ? WHERE id = ?`
+  db.prepare(addHoursStatement).run(hours, id)
+
+  const newResult = db.prepare(checkStatement).get(id)
+  
+
+  return res.json({error: false, message: 'successfully updated employee with id ' + id + ' added ' + hours +  ' to hours worked.', result: newResult })
+
+})
+
 
 module.exports = router;
