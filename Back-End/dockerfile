@@ -1,6 +1,6 @@
 FROM node
 COPY . /app
 WORKDIR /app
-RUN npm install
+RUN npm ci --omit=dev
 EXPOSE 3001
 CMD ["node", "main.js"]
