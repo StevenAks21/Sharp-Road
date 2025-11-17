@@ -95,6 +95,7 @@ function init() {
   `).run();
 
   // Income table
+  // date will be stored as ISO yyyy-mm-dd (no more dd-mm-yyyy inside DB)
   db.prepare(`
     CREATE TABLE IF NOT EXISTS income (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
