@@ -108,6 +108,13 @@ function init() {
     )
   `).run();
 
+  // Inventory table
+  db.prepare(`CREATE TABLE IF NOT EXISTS inventory(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    stock INTEGER NOT NULL,
+    date_last_restock TEXT)`).run()
+
   // Metadata table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS metadata (

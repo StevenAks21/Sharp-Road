@@ -80,7 +80,7 @@ router.put(`/daily/`, (req, res) => {
 
   const x = db.prepare(updateStatement).run(cash, qris, fnb, notes, total, cleanDate)
 
-  res.json({error: false, message: `Successfully changed income statement for ${date}`}).status(200)
+  res.json({ error: false, message: `Successfully changed income statement for ${date}` }).status(200)
 })
 
 // Daily income (input & output: dd-mm-yyyy)
@@ -133,9 +133,10 @@ router.get(`/weekly`, (req, res) => {
   const totalFNB = db.prepare(`SELECT SUM(fnb) AS fnb_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalCash = db.prepare(`SELECT SUM(cash) AS cash_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalQris = db.prepare(`SELECT SUM(qris) AS qris_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
+  const dailyReport = { daily_report: db.prepare(`SELECT * FROM income WHERE date BETWEEN ? AND ?`).all(start, end) }
 
-  const totalRental = { totalRental: (totalIncome.total_income || 0) - (totalFNB.fnb_total || 0) };
-  const result = [totalIncome, totalFNB, totalCash, totalQris, totalRental];
+  const totalRental = { totalRental: totalIncome.total_income - totalFNB.fnb_total }
+  const result = [totalIncome, totalFNB, totalCash, totalQris, totalRental, dailyReport];
 
   return res.json({
     error: false,
@@ -166,9 +167,10 @@ router.get(`/monthly`, (req, res) => {
   const totalFNB = db.prepare(`SELECT SUM(fnb) AS fnb_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalCash = db.prepare(`SELECT SUM(cash) AS cash_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalQris = db.prepare(`SELECT SUM(qris) AS qris_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
+  const dailyReport = { daily_report: db.prepare(`SELECT * FROM income WHERE date BETWEEN ? AND ?`).all(start, end) }
 
-  const totalRental = { totalRental: (totalIncome.total_income || 0) - (totalFNB.fnb_total || 0) };
-  const result = [totalIncome, totalFNB, totalCash, totalQris, totalRental];
+  const totalRental = { totalRental: totalIncome.total_income - totalFNB.fnb_total }
+  const result = [totalIncome, totalFNB, totalCash, totalQris, totalRental, dailyReport];
 
   return res.json({
     error: false,
