@@ -30,7 +30,8 @@ function toDisplay(date) {
 router.post("/add", (req, res) => {
   const { date, cash = 0, qris = 0, fnb = 0, notes = "" } = req.body || {};
 
-  if (!date) return res.status(400).json({ error: true, message: "Body must include: date, cash, qris, fnb" });
+  if (!date)
+    return res.status(400).json({ error: true, message: "Body must include: date, cash, qris, fnb" });
 
   const cleanDate = convert(date);
   if (!cleanDate) return res.status(400).json({ error: true, message: "Invalid date format! Use dd-mm-yyyy" });
@@ -48,40 +49,42 @@ router.post("/add", (req, res) => {
 
 // Test route
 router.get("/", (req, res) => {
-  res.json({ message: "Income route OK" });
+  res.status(200).json({ message: "Income route OK" });
 });
 
 // All-time income summary
 router.get("/alltime", (req, res) => {
   const row = db.prepare(`SELECT SUM(total) AS total_income FROM income`).get();
-  return res.status(200).json({ error: false, alltime_income: row.total_income || 0 });
+  const dailyReport = db.prepare(`SELECT * FROM income`).all()
+  return res.status(200).json({ error: false, alltime_income: row.total_income, dailyReport: dailyReport });
 });
 
 router.put(`/daily/`, (req, res) => {
   const { date, cash = 0, qris = 0, fnb = 0, notes = "" } = req.body || {};
 
   if (!date) {
-    return res.json({ error: true, message: `Date cannot be empty!` }).status(400)
-  }
-  const cleanDate = convert(date)
-  if (!cleanDate) {
-    return res.json({ error: true, message: `Invalid date format! use dd-mm-yyyy` })
+    return res.status(400).json({ error: true, message: `Date cannot be empty!` });
   }
 
-  const result = db.prepare(`SELECT * FROM income WHERE date = ?`).get(cleanDate)
+  const cleanDate = convert(date);
+  if (!cleanDate) {
+    return res.status(400).json({ error: true, message: `Invalid date format! use dd-mm-yyyy` });
+  }
+
+  const result = db.prepare(`SELECT * FROM income WHERE date = ?`).get(cleanDate);
 
   if (!result) {
-    return res.json({ error: true, message: `No records found for ${date}` })
+    return res.status(404).json({ error: true, message: `No records found for ${date}` });
   }
 
   const total = qris + cash;
 
-  const updateStatement = `UPDATE income SET cash = ?, qris = ?, fnb = ?, notes = ?, total = ? WHERE date = ?`
+  const updateStatement = `UPDATE income SET cash = ?, qris = ?, fnb = ?, notes = ?, total = ? WHERE date = ?`;
 
-  const x = db.prepare(updateStatement).run(cash, qris, fnb, notes, total, cleanDate)
+  db.prepare(updateStatement).run(cash, qris, fnb, notes, total, cleanDate);
 
-  res.json({ error: false, message: `Successfully changed income statement for ${date}` }).status(200)
-})
+  return res.status(200).json({ error: false, message: `Successfully changed income statement for ${date}` });
+});
 
 // Daily income (input & output: dd-mm-yyyy)
 router.get(`/daily/:date`, (req, res) => {
@@ -133,12 +136,12 @@ router.get(`/weekly`, (req, res) => {
   const totalFNB = db.prepare(`SELECT SUM(fnb) AS fnb_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalCash = db.prepare(`SELECT SUM(cash) AS cash_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalQris = db.prepare(`SELECT SUM(qris) AS qris_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
-  const dailyReport = { daily_report: db.prepare(`SELECT * FROM income WHERE date BETWEEN ? AND ?`).all(start, end) }
+  const dailyReport = { daily_report: db.prepare(`SELECT * FROM income WHERE date BETWEEN ? AND ?`).all(start, end) };
 
-  const totalRental = { totalRental: totalIncome.total_income - totalFNB.fnb_total }
+  const totalRental = { totalRental: totalIncome.total_income - totalFNB.fnb_total };
   const result = [totalIncome, totalFNB, totalCash, totalQris, totalRental, dailyReport];
 
-  return res.json({
+  return res.status(200).json({
     error: false,
     start: date,
     end: toDisplay(end),
@@ -167,12 +170,12 @@ router.get(`/monthly`, (req, res) => {
   const totalFNB = db.prepare(`SELECT SUM(fnb) AS fnb_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalCash = db.prepare(`SELECT SUM(cash) AS cash_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
   const totalQris = db.prepare(`SELECT SUM(qris) AS qris_total FROM income WHERE date BETWEEN ? AND ?`).get(start, end);
-  const dailyReport = { daily_report: db.prepare(`SELECT * FROM income WHERE date BETWEEN ? AND ?`).all(start, end) }
+  const dailyReport = { daily_report: db.prepare(`SELECT * FROM income WHERE date BETWEEN ? AND ?`).all(start, end) };
 
-  const totalRental = { totalRental: totalIncome.total_income - totalFNB.fnb_total }
+  const totalRental = { totalRental: totalIncome.total_income - totalFNB.fnb_total };
   const result = [totalIncome, totalFNB, totalCash, totalQris, totalRental, dailyReport];
 
-  return res.json({
+  return res.status(200).json({
     error: false,
     start: `01-${mm}-${yyyy}`,
     end: toDisplay(end),
