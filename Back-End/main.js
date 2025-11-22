@@ -1,12 +1,20 @@
 const express = require(`express`)
 const app = express()
 require(`dotenv`).config()
+const cors = require(`cors`)
+
+app.use(cors({
+    origin : process.env.ORIGIN,
+    methods: [`GET`, `POST`, `PUT`, `DELETE`],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}))
 const port = process.env.PORT
 
 
 // Get Middleware
 app.use(express.json())
 const checkToken = require(`./middleware/checkToken`)
+
 
 // Get All Routes
 const employees = require("./routes/employees")
