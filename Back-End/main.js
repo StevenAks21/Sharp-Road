@@ -22,9 +22,6 @@ app.use("/employees", checkToken, employees)
 
 app.use(`/inventory`, checkToken, inventory)
 
-app.get('/', (req, res) => {
-    res.json({e:3})
-})
 app.listen(port, () => {
     console.log(`listening at port ${port}`)
 })
