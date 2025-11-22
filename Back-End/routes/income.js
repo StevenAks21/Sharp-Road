@@ -35,7 +35,7 @@ router.post("/add", (req, res) => {
   const cleanDate = convert(date);
   if (!cleanDate) return res.status(400).json({ error: true, message: "Invalid date format! Use dd-mm-yyyy" });
 
-  const total = cash + qris + fnb;
+  const total = cash + qris;
 
   try {
     db.prepare(`INSERT INTO income (date, cash, qris, fnb, total, notes) VALUES (?, ?, ?, ?, ?, ?)`)
@@ -56,6 +56,32 @@ router.get("/alltime", (req, res) => {
   const row = db.prepare(`SELECT SUM(total) AS total_income FROM income`).get();
   return res.status(200).json({ error: false, alltime_income: row.total_income || 0 });
 });
+
+router.put(`/daily/`, (req, res) => {
+  const { date, cash = 0, qris = 0, fnb = 0, notes = "" } = req.body || {};
+
+  if (!date) {
+    return res.json({ error: true, message: `Date cannot be empty!` }).status(400)
+  }
+  const cleanDate = convert(date)
+  if (!cleanDate) {
+    return res.json({ error: true, message: `Invalid date format! use dd-mm-yyyy` })
+  }
+
+  const result = db.prepare(`SELECT * FROM income WHERE date = ?`).get(cleanDate)
+
+  if (!result) {
+    return res.json({ error: true, message: `No records found for ${date}` })
+  }
+
+  const total = qris + cash;
+
+  const updateStatement = `UPDATE income SET cash = ?, qris = ?, fnb = ?, notes = ?, total = ? WHERE date = ?`
+
+  const x = db.prepare(updateStatement).run(cash, qris, fnb, notes, total, cleanDate)
+
+  res.json({error: false, message: `Successfully changed income statement for ${date}`}).status(200)
+})
 
 // Daily income (input & output: dd-mm-yyyy)
 router.get(`/daily/:date`, (req, res) => {
