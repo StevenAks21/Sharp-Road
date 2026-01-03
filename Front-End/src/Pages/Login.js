@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { languageContext, insideContext } from "../Contexts";
 import { Link } from "react-router-dom";
 
@@ -9,12 +9,32 @@ function Login() {
     const [language] = useContext(languageContext);
     const [insideBuilding] = useContext(insideContext);
 
+    const serverURL = process.env.REACT_APP_SERVER_URL;
 
-    const handleLogin = () => {
+
+    const handleLogin = async () => {
         console.log(`Username: ${userName}, Password: ${password}`);
         console.log(`Language: ${language}`);
-        console.log(`Server URL: ${process.env.REACT_APP_SERVER_URL}`);
+
+        const response = await fetch(`${serverURL}/auth`, {
+            method: `POST`,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: userName,
+                password: password
+            })
+        })
+        const json = await response.json();
+        console.log(json);
+
+        console.log(`Response status: ${response.status}`);
     }
+
+    useEffect(() => {
+        document.title = "Login Page";
+    }, [])
 
 
     if (insideBuilding === null || language === null) {
@@ -26,6 +46,7 @@ function Login() {
             </div>
         )
     }
+
     return (
         <div>
             <label>Username:</label>
