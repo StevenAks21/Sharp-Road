@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { insideContext, languageContext } from "../App";
 import { Link } from "react-router-dom";
+import Style from "../Style/Welcome.module.css"
 
 
 
@@ -13,7 +14,7 @@ function Welcome() {
         return (
             <div>
                 <h2>Please Choose Your Language / Silakan Pilih Bahasa Anda</h2>
-                <button onClick={() => setLanguage('English')}>English</button>
+                <button onClick={() => setLanguage('English')} className = {Style.Button}>English</button>
                 <button onClick={() => setLanguage('Indonesian')}>Bahasa Indonesia</button>
             </div>
         )
@@ -61,11 +62,11 @@ function Welcome() {
             {language !== null && insideBuilding === null ? chooseLocation() : <></>}
             {language !== null && insideBuilding !== null ?
                 <div>
-                    {language === 'English' ? <p>Your Selections</p> : <p>Pilihan anda</p>}
+                    {language === 'English' ? <p>Your Selections</p> : <p>Pilihan Anda</p>}
                     <p>{language === "English" ? 'Language' : 'Bahasa'}: {language}</p>
                     <p>{language === 'English' ? 'Inside Building: ' : 'Dalam Gedung'} {status}</p>
 
-                    <Link to="/login"><button>Proceed to Login</button></Link>
+                    <Link to="/login"><button>Login</button></Link>
                 </div>
                 : <></>}
         </div>
