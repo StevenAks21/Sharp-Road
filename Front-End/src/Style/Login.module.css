@@ -1,0 +1,155 @@
+.container {
+    min-height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2rem;
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    color: #000000;
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+    text-align: center;
+}
+
+.subtext {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.label {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.input {
+    padding: 0.8rem 1rem;
+    border: 1px solid #000000;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    background: #ffffff;
+    color: #000000;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+.primaryButton {
+    width: 100%;
+    padding: 0.85rem;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 999px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.primaryButton:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: translateY(-2px);
+}
+
+.buttonRow {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: #000000;
+    border: 1px solid #000000;
+    border-radius: 999px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.button:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: translateY(-2px);
+}
+
+.error {
+    margin: 0.75rem 0 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ff2d2d;
+    text-align: center;
+}
+
+.link {
+    text-decoration: none;
+}
+
+.helperCard {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    color: #000000;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.helperButton {
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.helperButton:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: translateY(-2px);
+}
