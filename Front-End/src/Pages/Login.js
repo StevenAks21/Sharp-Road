@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { languageContext, insideContext } from "../Contexts";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Style from "../Style/Login.module.css";
 
 
@@ -13,7 +13,7 @@ function Login() {
     const [errorMessage, setErrorMessage] = useState("")
 
     const serverURL = process.env.REACT_APP_SERVER_URL;
-
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
@@ -46,6 +46,8 @@ function Login() {
             setError(true);
             setErrorMessage("Server error. Please try again later.");
         }
+
+        navigate("/home");
     };
 
     useEffect(() => {
