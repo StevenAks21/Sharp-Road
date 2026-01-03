@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { insideContext, languageContext } from "../App";
+import { insideContext, languageContext } from "../Contexts.js";
 import { Link } from "react-router-dom";
 import Style from "../Style/Welcome.module.css";
 

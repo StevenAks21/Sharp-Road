@@ -1,11 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import { useState, createContext } from "react";
+import { useState } from "react";
 import Login from "./Pages/Login";
 import Welcome from "./Pages/Welcome";
+import { insideContext, languageContext } from "./Contexts.js";
 
 
-export const insideContext = createContext();
-export const languageContext = createContext();
 
 function App() {
   const [insideBuilding, setInsideBuilding] = useState(null);
