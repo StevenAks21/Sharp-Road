@@ -36,18 +36,19 @@ function Login() {
                 return;
             }
 
+
             localStorage.setItem("token", json.token);
             setError(false);
             setErrorMessage("");
 
             console.log("Login successful");
 
+            navigate("/home");
+
         } catch (err) {
             setError(true);
             setErrorMessage("Server error. Please try again later.");
         }
-
-        navigate("/home");
     };
 
     useEffect(() => {
