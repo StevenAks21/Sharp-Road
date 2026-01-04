@@ -41,13 +41,13 @@ function Login() {
             setErrorMessage("");
 
             console.log("Login successful");
+            navigate("/home");
 
         } catch (err) {
             setError(true);
             setErrorMessage("Server error. Please try again later.");
         }
 
-        navigate("/home");
     };
 
     useEffect(() => {
