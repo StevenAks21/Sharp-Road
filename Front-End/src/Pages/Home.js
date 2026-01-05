@@ -1,4 +1,5 @@
 import Navbar from '../Components/Navbar'
+import { useEffect } from 'react';
 
 
 async function logToken(){
@@ -10,6 +11,9 @@ async function logToken(){
     console.log("Token from localStorage:", token);
 }
 function Home() {
+    useEffect(() => {
+        document.title = "SharpRoad - Home Page";
+    }, [])
     return (
         <div>
             <Navbar></Navbar>

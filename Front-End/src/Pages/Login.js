@@ -43,7 +43,7 @@ function Login() {
     const text = language ? TEXT[language] : null;
 
     useEffect(() => {
-        document.title = "Login Page";
+        document.title = "SharpRoad - Login Page";
     }, []);
 
     const onLoginClick = async () => {
