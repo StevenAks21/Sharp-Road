@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { insideContext, languageContext } from "../Contexts";
 import { Link } from "react-router-dom";
 import styles from "../Style/Welcome.module.css";
@@ -103,9 +103,7 @@ function Welcome() {
     const [insideBuilding, setInsideBuilding] = useContext(insideContext);
     const [language, setLanguage] = useContext(languageContext);
 
-    const text = useMemo(() => {
-        return language ? TEXT[language] : null;
-    }, [language]);
+    const text = language ? TEXT[language] : null;
 
     return (
         <div className={styles.container}>
