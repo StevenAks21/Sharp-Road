@@ -1,26 +1,36 @@
 import Navbar from '../Components/Navbar'
-import { useEffect } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { FetchName } from '../Services/Home/FetchName';
+import { languageContext, insideContext } from '../Contexts';
 
-
-async function logToken(){
-    const token = localStorage.getItem('token');
-    const url = `http://localhost:3001/employees/getall`
-    const response = await fetch(url, {headers: {'Authorization': `Bearer ${token}`}});
-    const data = await response.json();
-    console.log("Response Data:", data);
-    console.log("Token from localStorage:", token);
-}
 function Home() {
+    const [user, setUser] = useState(null);
+    const { language, setLanguage } = useContext(languageContext);
+    const { insideBuilding, setInsideBuilding } = useContext(insideContext);
+
+    const fetchUser = async () => {
+        try {
+            const userData = await FetchName();
+            console.log(userData.username);
+            setUser(userData.username);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     useEffect(() => {
         document.title = "SharpRoad - Home Page";
-    }, [])
+
+        fetchUser();
+    }, []);
+
     return (
         <div>
-            <Navbar></Navbar>
+            <Navbar />
             <h1>Home Page</h1>
-            <button onClick={logToken}>Log Token</button>
+            {user && <p>Welcome Back, {user}</p>}
         </div>
-    )
+    );
 }
 
 export default Home;
