@@ -37,7 +37,7 @@ function Home() {
         <div>
             <Navbar />
             <h1>Home Page</h1>
-            {user && <p>{text[`Welcome`]}, {user}</p>}
+            {user && <p>{text.Welcome}, {user}</p>}
         </div>
     );
 }

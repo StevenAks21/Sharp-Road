@@ -1,18 +1,35 @@
 .navbar {
     width: 100%;
     background: #000000;
-    padding: 1rem;
+    padding: 0.8rem 1rem;
+
     display: flex;
-    gap: 1.5rem;
+    align-items: center;
+    gap: 1rem;
+
     font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* IMPORTANT FIX */
+    box-sizing: border-box;
+    flex-wrap: wrap;
 }
 
+/* Left-side navigation links */
+.links {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    flex: 1;
+    /* THIS is the key */
+}
+
+/* Navigation link styles */
 .link {
     color: #ffffff;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    padding: 0.4rem 0.9rem;
+    padding: 0.45rem 1rem;
     border-radius: 999px;
     transition:
         transform 0.15s ease,
@@ -23,5 +40,46 @@
 .link:hover {
     background-color: #ffffff;
     color: #000000;
-    transform: translateY(-4px);
+    transform: translateY(-2px);
+}
+
+/* Language switch button */
+.languageBtn {
+    background: transparent;
+    border: 1.5px solid #ffffff;
+    color: #ffffff;
+
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.languageBtn:hover {
+    background-color: #ffffff;
+    color: #000000;
+    transform: translateY(-2px);
+}
+
+.languageBtn:active {
+    transform: translateY(0);
+}
+
+/* Optional: focus state for accessibility */
+.languageBtn:focus-visible,
+.link:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
 }
