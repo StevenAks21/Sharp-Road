@@ -1,105 +1,133 @@
-import { useContext, useState } from "react";
-import { insideContext, languageContext } from "../Contexts.js";
+import { useContext, useMemo } from "react";
+import { insideContext, languageContext } from "../Contexts";
 import { Link } from "react-router-dom";
-import Style from "../Style/Welcome.module.css";
+import styles from "../Style/Welcome.module.css";
+
+const TEXT = {
+    English: {
+        chooseLanguageTitle: "Please Choose Your Language",
+        chooseLanguageSub: "Silakan Pilih Bahasa Anda",
+        insideQuestion: "Are you inside the building?",
+        yes: "Yes",
+        no: "No",
+        summary: "Your Selections",
+        language: "Language",
+        inside: "Inside Building",
+        login: "Login"
+    },
+    Indonesian: {
+        chooseLanguageTitle: "Silakan Pilih Bahasa Anda",
+        chooseLanguageSub: "Please Choose Your Language",
+        insideQuestion: "Apakah Anda berada di dalam gedung?",
+        yes: "Ya",
+        no: "Tidak",
+        summary: "Pilihan Anda",
+        language: "Bahasa",
+        inside: "Dalam Gedung",
+        login: "Login"
+    }
+};
+
+function LanguageSelector({ onSelect }) {
+    return (
+        <div className={styles.card}>
+            <h2>{TEXT.English.chooseLanguageTitle}</h2>
+            <p className={styles.subtext}>{TEXT.English.chooseLanguageSub}</p>
+
+            <div className={styles.buttonGroup}>
+                <button
+                    className={styles.button}
+                    onClick={() => onSelect("English")}
+                >
+                    English
+                </button>
+                <button
+                    className={styles.button}
+                    onClick={() => onSelect("Indonesian")}
+                >
+                    Bahasa Indonesia
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function LocationSelector({ text, onSelect }) {
+    return (
+        <div className={styles.card}>
+            <h2>{text.insideQuestion}</h2>
+
+            <div className={styles.buttonGroup}>
+                <button
+                    className={styles.button}
+                    onClick={() => onSelect(true)}
+                >
+                    {text.yes}
+                </button>
+                <button
+                    className={styles.button}
+                    onClick={() => onSelect(false)}
+                >
+                    {text.no}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function Summary({ text, language, insideBuilding }) {
+    return (
+        <div className={styles.card}>
+            <h2>{text.summary}</h2>
+
+            <div className={styles.summary}>
+                <p>
+                    <span>{text.language}:</span> {language}
+                </p>
+                <p>
+                    <span>{text.inside}:</span>{" "}
+                    {insideBuilding ? text.yes : text.no}
+                </p>
+            </div>
+
+            <Link to="/login" className={styles.link}>
+                <button className={styles.primaryButton}>
+                    {text.login}
+                </button>
+            </Link>
+        </div>
+    );
+}
 
 function Welcome() {
     const [insideBuilding, setInsideBuilding] = useContext(insideContext);
     const [language, setLanguage] = useContext(languageContext);
-    const [status, setStatus] = useState(null);
 
-    function chooseLanguage() {
-        return (
-            <div className={Style.card}>
-                <h2>Please Choose Your Language</h2>
-                <p className={Style.subtext}>Silakan Pilih Bahasa Anda</p>
-
-                <div className={Style.buttonGroup}>
-                    <button
-                        onClick={() => setLanguage("English")}
-                        className={Style.button}
-                    >
-                        English
-                    </button>
-                    <button
-                        onClick={() => setLanguage("Indonesian")}
-                        className={Style.button}
-                    >
-                        Bahasa Indonesia
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    function chooseLocation() {
-        return (
-            <div className={Style.card}>
-                <h2>
-                    {language === "English"
-                        ? "Are you inside the building?"
-                        : "Apakah Anda berada di dalam gedung?"}
-                </h2>
-
-                <div className={Style.buttonGroup}>
-                    <button
-                        className={Style.button}
-                        onClick={() => {
-                            setInsideBuilding(true);
-                            setStatus(language === "English" ? "Yes" : "Ya");
-                        }}
-                    >
-                        {language === "English" ? "Yes" : "Ya"}
-                    </button>
-
-                    <button
-                        className={Style.button}
-                        onClick={() => {
-                            setInsideBuilding(false);
-                            setStatus(language === "English" ? "No" : "Tidak");
-                        }}
-                    >
-                        {language === "English" ? "No" : "Tidak"}
-                    </button>
-                </div>
-            </div>
-        );
-    }
+    const text = useMemo(() => {
+        return language ? TEXT[language] : null;
+    }, [language]);
 
     return (
-        <div className={Style.container}>
-            <h1 className={Style.title}>SharpRoad</h1>
+        <div className={styles.container}>
+            <h1 className={styles.title}>SharpRoad</h1>
 
-            {language === null && chooseLanguage()}
+            {!language && (
+                <LanguageSelector onSelect={setLanguage} />
+            )}
 
-            {language !== null && insideBuilding === null && chooseLocation()}
+            {language && insideBuilding === null && (
+                <LocationSelector
+                    text={text}
+                    onSelect={setInsideBuilding}
+                />
+            )}
 
-            {language !== null && insideBuilding !== null && (
-                <div className={Style.card}>
-                    <h2>
-                        {language === "English" ? "Your Selections" : "Pilihan Anda"}
-                    </h2>
-
-                    <div className={Style.summary}>
-                        <p>
-                            <span>{language === "English" ? "Language" : "Bahasa"}:</span>{" "}
-                            {language}
-                        </p>
-                        <p>
-                            <span>
-                                {language === "English"
-                                    ? "Inside Building"
-                                    : "Dalam Gedung"}
-                                :
-                            </span>{" "}
-                            {status}
-                        </p>
-                    </div>
-
-                    <Link to="/login" className={Style.link}>
-                        <button className={Style.primaryButton}>Login</button>
-                    </Link>
-                </div>
+            {language && insideBuilding !== null && (
+                <Summary
+                    text={text}
+                    language={language}
+                    insideBuilding={insideBuilding}
+                />
             )}
         </div>
     );
