@@ -7,6 +7,7 @@ import Style from "../Style/Login.module.css";
 const TEXT = {
     English: {
         title: "Login",
+        pageTitle: "SharpRoad - Login Page",
         subtitle: "Enter your username and password to continue.",
         username: "Username",
         password: "Password",
@@ -18,6 +19,7 @@ const TEXT = {
     },
     Indonesian: {
         title: "Masuk",
+        pageTitle: "SharpRoad - Halaman Masuk",
         subtitle: "Masukkan nama pengguna dan kata sandi untuk lanjut.",
         username: "Nama Pengguna",
         password: "Kata Sandi",
@@ -43,8 +45,8 @@ function Login() {
     const text = language ? TEXT[language] : null;
 
     useEffect(() => {
-        document.title = "SharpRoad - Login Page";
-    }, []);
+        document.title = text.pageTitle;
+    }, [text]);
 
     const onLoginClick = async () => {
         try {

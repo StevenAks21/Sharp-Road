@@ -6,16 +6,18 @@ import { languageContext } from '../Contexts';
 const TEXT = {
     English: {
         Welcome: "Welcome Back, ",
+        PageTitle: "SharpRoad - Home Page"
     },
     Indonesian: {
         Welcome: "Selamat Datang Kembali, ",
+        PageTitle: "SharpRoad - Halaman Beranda"
     }
 }
 
 function Home() {
     const [user, setUser] = useState(null);
     const [language] = useContext(languageContext);
-    const text = language ? TEXT[language] : null;
+    const text = TEXT[language ?? "English"];
 
     const fetchUser = async () => {
         try {
@@ -27,9 +29,9 @@ function Home() {
     };
 
     useEffect(() => {
-        document.title = "SharpRoad - Home Page";
+        document.title = text.PageTitle;
         fetchUser();
-    }, );
+    }, [text]);
 
     return (
         <div>
