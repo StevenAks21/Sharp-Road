@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Style from "../Style/Navbar.module.css";
 import { languageContext } from "../Contexts";
 import { useContext } from "react";
 
 const TEXT = {
     English: {
+        Home: "Home",
         Employees: "Employees",
         Income: "Income",
         Users: "Users",
@@ -12,6 +13,7 @@ const TEXT = {
         Switch: "ID",
     },
     Indonesian: {
+        Home: "Beranda",
         Employees: "Karyawan",
         Income: "Pendapatan",
         Users: "Pengguna",
@@ -25,13 +27,17 @@ function Navbar() {
     const text = language ? TEXT[language] : TEXT.English;
     const switchLanguage = language === "English" ? "Indonesian" : "English";
 
+    const navClass = ({ isActive }) =>
+        isActive ? `${Style.link} ${Style.active}` : Style.link;
+
     return (
         <nav className={Style.navbar}>
             <div className={Style.links}>
-                <Link to="/employees" className={Style.link}>{text.Employees}</Link>
-                <Link to="/income" className={Style.link}>{text.Income}</Link>
-                <Link to="/users" className={Style.link}>{text.Users}</Link>
-                <Link to="/inventory" className={Style.link}>{text.Inventory}</Link>
+                <NavLink to="/home" className={navClass}>{text.Home}</NavLink>
+                <NavLink to="/employees" className={navClass}>{text.Employees}</NavLink>
+                <NavLink to="/income" className={navClass}>{text.Income}</NavLink>
+                <NavLink to="/users" className={navClass}>{text.Users}</NavLink>
+                <NavLink to="/inventory" className={navClass}>{text.Inventory}</NavLink>
             </div>
 
             <button
