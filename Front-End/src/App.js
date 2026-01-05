@@ -3,9 +3,8 @@ import { useState } from "react";
 import Login from "./Pages/Login";
 import Welcome from "./Pages/Welcome";
 import Home from "./Pages/Home";
-import { insideContext, languageContext } from "./Contexts.js";
-
-
+import RequireSetup from "./Guard/RequireSetup.js";
+import { insideContext, languageContext } from "./Contexts";
 
 function App() {
   const [insideBuilding, setInsideBuilding] = useState(null);
@@ -15,9 +14,29 @@ function App() {
     <languageContext.Provider value={[language, setLanguage]}>
       <insideContext.Provider value={[insideBuilding, setInsideBuilding]}>
         <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path='/' element={<Welcome />} />
+
+          {/* ✅ UNGUARDED */}
+          <Route path="/" element={<Welcome />} />
+
+          {/* 🔒 GUARDED */}
+          <Route
+            path="/login"
+            element={
+              <RequireSetup>
+                <Login />
+              </RequireSetup>
+            }
+          />
+
+          <Route
+            path="/home"
+            element={
+              <RequireSetup>
+                <Home />
+              </RequireSetup>
+            }
+          />
+
         </Routes>
       </insideContext.Provider>
     </languageContext.Provider>
