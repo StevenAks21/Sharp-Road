@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { insideContext, languageContext } from "../Contexts";
 import { Link } from "react-router-dom";
 import styles from "../Style/Welcome.module.css";
@@ -104,6 +104,9 @@ function Welcome() {
     const [language, setLanguage] = useContext(languageContext);
 
     const text = language ? TEXT[language] : null;
+    useEffect(() => {
+        document.title = "SharpRoad - Welcome";
+    })
 
     return (
         <div className={styles.container}>

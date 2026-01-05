@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { languageContext, insideContext } from "../Contexts";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { handleLogin } from "../Services/Login/auth";
 import Style from "../Style/Login.module.css";
 
@@ -64,25 +64,6 @@ function Login() {
 
     return (
         <div className={Style.container}>
-            {/* -------- Guard -------- */}
-            {(!language || insideBuilding === null) && (
-                <>
-                    <h2 className={Style.title}>
-                        Location & Language Required
-                    </h2>
-
-                    <div className={Style.helperCard}>
-                        <h2>{TEXT.English.missingLine1}</h2>
-                        <h2>{TEXT.Indonesian.missingLine1}</h2>
-
-                        <Link className={Style.link} to="/">
-                            <button className={Style.helperButton}>
-                                {TEXT.English.back}
-                            </button>
-                        </Link>
-                    </div>
-                </>
-            )}
 
             {language && insideBuilding !== null && (
                 <>

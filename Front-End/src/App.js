@@ -15,10 +15,8 @@ function App() {
       <insideContext.Provider value={[insideBuilding, setInsideBuilding]}>
         <Routes>
 
-          {/* ✅ UNGUARDED */}
           <Route path="/" element={<Welcome />} />
 
-          {/* 🔒 GUARDED */}
           <Route
             path="/login"
             element={
