@@ -3,6 +3,7 @@ import { useState } from "react";
 import Login from "./Pages/Login";
 import Welcome from "./Pages/Welcome";
 import Home from "./Pages/Home";
+import Employees from "./Pages/Employees";
 import RequireSetup from "./Guard/RequireSetup.js";
 import { insideContext, languageContext } from "./Contexts";
 
@@ -31,6 +32,15 @@ function App() {
             element={
               <RequireSetup>
                 <Home />
+              </RequireSetup>
+            }
+          />
+
+          <Route
+            path='/employees'
+            element={
+              <RequireSetup>
+                <Employees />
               </RequireSetup>
             }
           />

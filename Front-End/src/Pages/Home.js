@@ -1,7 +1,7 @@
 import Navbar from '../Components/Navbar'
 import { useEffect, useState, useContext } from 'react';
 import { FetchName } from '../Services/Home/FetchName';
-import { languageContext, insideContext } from '../Contexts';
+import { languageContext } from '../Contexts';
 
 const TEXT = {
     English: {
@@ -14,8 +14,7 @@ const TEXT = {
 
 function Home() {
     const [user, setUser] = useState(null);
-    const [language, setLanguage] = useContext(languageContext);
-    const [insideBuilding, setInsideBuilding] = useContext(insideContext);
+    const [language] = useContext(languageContext);
     const text = language ? TEXT[language] : null;
 
     const fetchUser = async () => {
@@ -29,15 +28,14 @@ function Home() {
 
     useEffect(() => {
         document.title = "SharpRoad - Home Page";
-        console.log(language)
         fetchUser();
-    }, []);
+    }, );
 
     return (
         <div>
             <Navbar />
             <h1>Home Page</h1>
-            {user && <p>{text.Welcome}, {user}</p>}
+            {user && <p>{text.Welcome} {user}</p>}
         </div>
     );
 }
