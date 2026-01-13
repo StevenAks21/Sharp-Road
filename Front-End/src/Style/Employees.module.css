@@ -1,0 +1,234 @@
+.container {
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 1.2rem 0 1.2rem;
+  color: #ffffff;
+  text-align: center;
+}
+
+.subtext {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 1rem 0 0.5rem;
+  text-align: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  background: #ffffff;
+  color: #000000;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+.buttonRow {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+/* Base button style */
+.button,
+.primaryButton {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.button {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+}
+
+.button:hover,
+.primaryButton:hover {
+  transform: translateY(-1px);
+}
+
+.button:active,
+.primaryButton:active {
+  transform: translateY(-2px);
+  background: #000000;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.08);
+}
+
+/* Selected tab button */
+.activeButton {
+  transform: translateY(-2px);
+  background: #000000;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.08);
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ff2d2d;
+  text-align: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 1rem;
+}
+
+.helperCard {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+/* Employee cards grid */
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.employeeCard {
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #000000;
+}
+
+.employeeHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.employeeName {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.employeeMeta {
+  font-size: 0.9rem;
+  color: #444;
+  margin-top: 4px;
+}
+
+.employeePill {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.employeeDivider {
+  height: 1px;
+  background: #000000;
+  opacity: 0.12;
+  margin: 1rem 0;
+}
+
+.employeeRows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.employeeRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.employeeKey {
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.employeeVal {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
