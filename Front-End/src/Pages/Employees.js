@@ -284,7 +284,6 @@ function Employees() {
     });
   };
 
-  // ✅ Updated: Stay on ADD page, show success or failure message
   const addEmployee = async () => {
     const name = employeeName.trim();
     if (!name) {
@@ -329,7 +328,6 @@ function Employees() {
     });
   };
 
-  // ✅ Updated: Stay on REMOVE page, show success or failure message
   const removeEmployeeById = async () => {
     const id = employeeToRemoveId.trim();
     if (!id) {
@@ -357,7 +355,6 @@ function Employees() {
     }
   };
 
-  // ✅ Keep: Stay on HOURS page, show success or failure message
   const logWorkHours = async () => {
     const id = employeeHoursId.trim();
     const hours = employeeHoursAmount.trim();

@@ -4,8 +4,9 @@ import Login from "./Pages/Login";
 import Welcome from "./Pages/Welcome";
 import Home from "./Pages/Home";
 import Employees from "./Pages/Employees";
+import Income from "./Pages/Income.js";
 import RequireSetup from "./Guard/RequireSetup.js";
-import { insideContext, languageContext} from "./Contexts";
+import { insideContext, languageContext } from "./Contexts";
 
 function App() {
   const [insideBuilding, setInsideBuilding] = useState(null);
@@ -14,38 +15,45 @@ function App() {
   return (
     <languageContext.Provider value={[language, setLanguage]}>
       <insideContext.Provider value={[insideBuilding, setInsideBuilding]}>
-          <Routes>
+        <Routes>
+          <Route path="/" element={<Welcome />} />
 
-            <Route path="/" element={<Welcome />} />
+          <Route
+            path="/login"
+            element={
+              <RequireSetup>
+                <Login />
+              </RequireSetup>
+            }
+          />
 
-            <Route
-              path="/login"
-              element={
-                <RequireSetup>
-                  <Login />
-                </RequireSetup>
-              }
-            />
+          <Route
+            path="/home"
+            element={
+              <RequireSetup>
+                <Home />
+              </RequireSetup>
+            }
+          />
 
-            <Route
-              path="/home"
-              element={
-                <RequireSetup>
-                  <Home />
-                </RequireSetup>
-              }
-            />
+          <Route
+            path="/employees"
+            element={
+              <RequireSetup>
+                <Employees />
+              </RequireSetup>
+            }
+          />
 
-            <Route
-              path='/employees'
-              element={
-                <RequireSetup>
-                  <Employees />
-                </RequireSetup>
-              }
-            />
-
-          </Routes>
+          <Route
+            path="/income"
+            element={
+              <RequireSetup>
+                <Income />
+              </RequireSetup>
+            }
+          />
+        </Routes>
       </insideContext.Provider>
     </languageContext.Provider>
   );
