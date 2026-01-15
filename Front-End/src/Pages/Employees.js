@@ -22,6 +22,7 @@ const TEXT = {
     FailedToLoad: "Failed to load employees",
     SomethingWentWrong: "Something went wrong",
     InvalidId: "Please enter a valid employee ID",
+    InvalidName: "Please enter a valid employee name",
     NoEmployeeFound: "No employee found",
     EmployeeNotFound: "Employee not found",
     SuccessRemoveFallback: "Employee removed successfully",
@@ -54,6 +55,16 @@ const TEXT = {
       Refresh: "Refresh",
     },
     Messages: {
+      EmployeeAdded: (name) => `Employee added successfully: ${name}`,
+      EmployeeAddFailed: (reason) =>
+        `Failed to add employee. ${reason ? `Reason: ${reason}` : ""}`.trim(),
+
+      EmployeeRemoved: (id) => `Employee removed successfully. ID: ${id}`,
+      EmployeeRemoveFailed: (reason) =>
+        `Failed to remove employee. ${
+          reason ? `Reason: ${reason}` : ""
+        }`.trim(),
+
       HoursLogged: (name, hours, pay) =>
         `Hours logged under the name ${name}. Current working hours = ${hours} and current pay = ${pay}`,
       HoursLogFailed: (reason) =>
@@ -73,6 +84,7 @@ const TEXT = {
     FailedToLoad: "Gagal memuat karyawan",
     SomethingWentWrong: "Terjadi kesalahan",
     InvalidId: "Masukkan ID karyawan yang valid",
+    InvalidName: "Masukkan nama karyawan yang valid",
     NoEmployeeFound: "Tidak ada karyawan",
     EmployeeNotFound: "Karyawan tidak ditemukan",
     SuccessRemoveFallback: "Karyawan berhasil dihapus",
@@ -105,6 +117,16 @@ const TEXT = {
       Refresh: "Muat Ulang",
     },
     Messages: {
+      EmployeeAdded: (name) => `Karyawan berhasil ditambahkan: ${name}`,
+      EmployeeAddFailed: (reason) =>
+        `Gagal menambahkan karyawan. ${
+          reason ? `Alasan: ${reason}` : ""
+        }`.trim(),
+
+      EmployeeRemoved: (id) => `Karyawan berhasil dihapus. ID: ${id}`,
+      EmployeeRemoveFailed: (reason) =>
+        `Gagal menghapus karyawan. ${reason ? `Alasan: ${reason}` : ""}`.trim(),
+
       HoursLogged: (name, hours, pay) =>
         `Jam kerja dicatat atas nama ${name}. Total jam kerja saat ini = ${hours} dan gaji saat ini = ${pay}`,
       HoursLogFailed: (reason) =>
@@ -241,12 +263,11 @@ function Employees() {
     }
   };
 
-  const run = async (fn, { onSuccess } = {}) => {
+  const run = async (fn) => {
     try {
       setLoading(true);
       resetFeedback();
       await fn();
-      onSuccess?.();
     } catch (err) {
       setErrorMessage(err?.message ?? text.SomethingWentWrong);
     } finally {
@@ -263,15 +284,31 @@ function Employees() {
     });
   };
 
+  // ✅ Updated: Stay on ADD page, show success or failure message
   const addEmployee = async () => {
     const name = employeeName.trim();
-    if (!name) return;
+    if (!name) {
+      setErrorMessage(text.InvalidName);
+      setMessage(text.Messages.EmployeeAddFailed(text.InvalidName));
+      return;
+    }
 
-    await run(async () => {
+    try {
+      setLoading(true);
+      resetFeedback();
+
       await AddEmployee(name);
+
+      setMessage(text.Messages.EmployeeAdded(name));
+      setErrorMessage("");
       setEmployeeName("");
-      await fetchAllEmployees();
-    });
+    } catch (err) {
+      const reason = err?.message ?? text.SomethingWentWrong;
+      setErrorMessage(reason);
+      setMessage(text.Messages.EmployeeAddFailed(reason));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getEmployeeById = async () => {
@@ -292,21 +329,35 @@ function Employees() {
     });
   };
 
+  // ✅ Updated: Stay on REMOVE page, show success or failure message
   const removeEmployeeById = async () => {
     const id = employeeToRemoveId.trim();
     if (!id) {
       setErrorMessage(text.InvalidId);
+      setMessage(text.Messages.EmployeeRemoveFailed(text.InvalidId));
       return;
     }
 
-    await run(async () => {
+    try {
+      setLoading(true);
+      resetFeedback();
+
       const data = await RemoveEmployeeById(id);
-      setMessage(data?.message ?? text.SuccessRemoveFallback);
-      await fetchAllEmployees();
-    });
+      const apiMsg = data?.message;
+
+      setMessage(apiMsg ?? text.Messages.EmployeeRemoved(id));
+      setErrorMessage("");
+      setEmployeeToRemoveId("");
+    } catch (err) {
+      const reason = err?.message ?? text.SomethingWentWrong;
+      setErrorMessage(reason);
+      setMessage(text.Messages.EmployeeRemoveFailed(reason));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ✅ Updated: Stay on HOURS page, show success or failure message
+  // ✅ Keep: Stay on HOURS page, show success or failure message
   const logWorkHours = async () => {
     const id = employeeHoursId.trim();
     const hours = employeeHoursAmount.trim();
