@@ -1,405 +1,593 @@
 import Navbar from "../Components/Navbar";
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import { languageContext } from "../Contexts";
 import { GetAll } from "../Services/Employees/GetAll";
 import { AddEmployee } from "../Services/Employees/AddEmployee";
 import { GetEmployeeById } from "../Services/Employees/GetEmployeeById";
 import { RemoveEmployeeById } from "../Services/Employees/RemoveEmployeeById";
+import { LogHours } from "../Services/Employees/Loghours";
 import Style from "../Style/Employees.module.css";
 
 const TEXT = {
-    English: {
-        PageTitle: "SharpRoad - Employees Page",
-        ButtonAllEmployees: "Get All Employees",
-        ButtonAddEmployee: "Add An Employee",
-        ButtonGetEmployee: "Get Employee By ID",
-        ButtonRemoveEmployee: "Remove Employee By ID",
-        ButtonLogHours: "Log Work Hours",
-        NoEmployeeFound: "No employee found",
-        Loading: "Loading...",
-        FailedToLoad: "Failed to load employees",
-        AddPlaceholder: "Enter employee name",
-        AddEmployeeButton: "Submit",
-        AddTitle: "Add Employee",
-        AllTitle: "Employees",
-        Labels: {
-            Id: "ID",
-            Name: "Name",
-            HoursWorked: "Hours Worked",
-            CurrentPay: "Current Pay",
-            TotalPay: "Total Pay",
-        },
-        GetButton: "Get Employee",
-        EnterId: "Enter employee ID",
-        NotFound: "Employee not found",
-        InvalidId: "Please enter a valid employee ID",
-        RemoveEmployeeButton: "Remove Employee",
-        RemoveEmployeeInputPlaceholder: "Enter the ID",
+  English: {
+    PageTitle: "SharpRoad - Employees Page",
+    Tabs: {
+      All: "Get All Employees",
+      Add: "Add An Employee",
+      Get: "Get Employee By ID",
+      Remove: "Remove Employee By ID",
+      Hours: "Log Work Hours",
     },
-    Indonesian: {
-        PageTitle: "SharpRoad - Halaman Karyawan",
-        ButtonAllEmployees: "Tampilkan Semua Karyawan",
-        ButtonAddEmployee: "Tambah Karyawan",
-        ButtonGetEmployee: "Tampilkan Karyawan Berdasarkan ID",
-        ButtonRemoveEmployee: "Hapus Karyawan Berdasarkan ID",
-        ButtonLogHours: "Catat Jam Kerja",
-        NoEmployeeFound: "Tidak ada karyawan",
-        Loading: "Memuat...",
-        FailedToLoad: "Gagal memuat karyawan",
-        AddPlaceholder: "Masukkan nama karyawan",
-        AddEmployeeButton: "Kirim",
-        AddTitle: "Tambah Karyawan",
-        AllTitle: "Karyawan",
-        Labels: {
-            Id: "ID",
-            Name: "Nama",
-            HoursWorked: "Jam Kerja",
-            CurrentPay: "Gaji Saat Ini",
-            TotalPay: "Total Gaji",
-        },
-        GetButton: "Tampilkan Karyawan",
-        EnterId: "Masukkan ID karyawan",
-        NotFound: "Karyawan tidak ditemukan",
-        InvalidId: "Masukkan ID karyawan yang valid",
-        RemoveEmployeeButton: "Hapus Karyawan",
-        RemoveEmployeeInputPlaceholder: "Masukkan ID karyawan",
+    Loading: "Loading...",
+    FailedToLoad: "Failed to load employees",
+    SomethingWentWrong: "Something went wrong",
+    InvalidId: "Please enter a valid employee ID",
+    NoEmployeeFound: "No employee found",
+    EmployeeNotFound: "Employee not found",
+    SuccessRemoveFallback: "Employee removed successfully",
+    Titles: {
+      All: "Employees",
+      Add: "Add Employee",
+      Get: "Find Employee",
+      Remove: "Remove Employee",
+      Hours: "Log Work Hours",
     },
+    Labels: {
+      Id: "ID",
+      Name: "Name",
+      HoursWorked: "Hours Worked",
+      CurrentPay: "Current Pay",
+      TotalPay: "Total Pay",
+    },
+    Inputs: {
+      AddName: "Enter employee name",
+      GetId: "Enter employee ID",
+      RemoveId: "Enter employee ID",
+      HoursEmployeeId: "Enter employee ID",
+      HoursAmount: "Enter worked hours",
+    },
+    Buttons: {
+      Submit: "Submit",
+      GetEmployee: "Get Employee",
+      RemoveEmployee: "Remove Employee",
+      LogHours: "Log Work Hours",
+      Refresh: "Refresh",
+    },
+    Messages: {
+      HoursLogged: (name, hours, pay) =>
+        `Hours logged under the name ${name}. Current working hours = ${hours} and current pay = ${pay}`,
+      HoursLogFailed: (reason) =>
+        `Failed to log work hours. ${reason ? `Reason: ${reason}` : ""}`.trim(),
+    },
+  },
+  Indonesian: {
+    PageTitle: "SharpRoad - Halaman Karyawan",
+    Tabs: {
+      All: "Tampilkan Semua Karyawan",
+      Add: "Tambah Karyawan",
+      Get: "Tampilkan Karyawan Berdasarkan ID",
+      Remove: "Hapus Karyawan Berdasarkan ID",
+      Hours: "Catat Jam Kerja",
+    },
+    Loading: "Memuat...",
+    FailedToLoad: "Gagal memuat karyawan",
+    SomethingWentWrong: "Terjadi kesalahan",
+    InvalidId: "Masukkan ID karyawan yang valid",
+    NoEmployeeFound: "Tidak ada karyawan",
+    EmployeeNotFound: "Karyawan tidak ditemukan",
+    SuccessRemoveFallback: "Karyawan berhasil dihapus",
+    Titles: {
+      All: "Karyawan",
+      Add: "Tambah Karyawan",
+      Get: "Cari Karyawan",
+      Remove: "Hapus Karyawan",
+      Hours: "Catat Jam Kerja",
+    },
+    Labels: {
+      Id: "ID",
+      Name: "Nama",
+      HoursWorked: "Jam Kerja",
+      CurrentPay: "Gaji Saat Ini",
+      TotalPay: "Total Gaji",
+    },
+    Inputs: {
+      AddName: "Masukkan nama karyawan",
+      GetId: "Masukkan ID karyawan",
+      RemoveId: "Masukkan ID karyawan",
+      HoursEmployeeId: "Masukkan ID karyawan",
+      HoursAmount: "Masukkan jumlah jam kerja",
+    },
+    Buttons: {
+      Submit: "Kirim",
+      GetEmployee: "Tampilkan Karyawan",
+      RemoveEmployee: "Hapus Karyawan",
+      LogHours: "Catat Jam Kerja",
+      Refresh: "Muat Ulang",
+    },
+    Messages: {
+      HoursLogged: (name, hours, pay) =>
+        `Jam kerja dicatat atas nama ${name}. Total jam kerja saat ini = ${hours} dan gaji saat ini = ${pay}`,
+      HoursLogFailed: (reason) =>
+        `Gagal mencatat jam kerja. ${reason ? `Alasan: ${reason}` : ""}`.trim(),
+    },
+  },
 };
 
-function Employees() {
-    const [language] = useContext(languageContext);
-    const text = TEXT[language ?? "English"];
+const VIEWS = {
+  ALL: "all",
+  ADD: "add",
+  GET: "get",
+  REMOVE: "remove",
+  HOURS: "hours",
+};
 
-    const [currentView, setCurrentView] = useState("all"); // "all" | "add" | "get" | "remove" | "hours"
-    const [employees, setEmployees] = useState([]);
+function Field({
+  label,
+  value,
+  placeholder,
+  onChange,
+  disabled = false,
+  type = "text",
+}) {
+  return (
+    <div className={Style.field}>
+      <label className={Style.label}>{label}</label>
+      <input
+        className={Style.input}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        type={type}
+      />
+    </div>
+  );
+}
 
-    const [employeeName, setEmployeeName] = useState("");
+function StatRow({ label, value }) {
+  return (
+    <div className={Style.employeeRow}>
+      <span className={Style.employeeKey}>{label}</span>
+      <span className={Style.employeeVal}>{value}</span>
+    </div>
+  );
+}
 
-    const [employeeId, setEmployeeId] = useState("");
-
-    const [fetchedEmployee, setFetchedEmployee] = useState(null);
-
-    const [employeeToRemoveId, setEmployeeToRemoveId] = useState("");
-    const [message, setMessage] = useState("");
-
-    const [employeeHoursId, setEmployeeHoursId] = useState("");
-    const [employeeHoursAmount, setEmployeeHoursAmount] = useState("");
-
-    const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [hasFetchedAll, setHasFetchedAll] = useState(false);
-
-    // Key fix: only show "not found" after pressing the button
-    const [hasSearchedById, setHasSearchedById] = useState(false);
-
-    useEffect(() => {
-        document.title = text.PageTitle;
-    }, [text]);
-
-    const rupiah = (value) => `Rp ${Number(value ?? 0).toLocaleString("id-ID")}`;
-
-    const handleGetAllEmployees = async () => {
-        try {
-            setLoading(true);
-            setErrorMessage("");
-
-            const data = await GetAll();
-            setEmployees(Array.isArray(data) ? data : []);
-            setCurrentView("all");
-        } catch {
-            setEmployees([]);
-            setErrorMessage(text.FailedToLoad);
-        } finally {
-            setHasFetchedAll(true);
-            setLoading(false);
-        }
-    };
-
-    const handleAddEmployee = async () => {
-        try {
-            setLoading(true);
-            setErrorMessage("");
-
-            await AddEmployee(employeeName);
-            setEmployeeName("");
-            await handleGetAllEmployees();
-        } catch (err) {
-            setErrorMessage(err?.message ?? "Something went wrong");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleGetEmployeeById = async () => {
-        const id = employeeId.trim();
-        if (!id) {
-            setErrorMessage(text.InvalidId);
-            setFetchedEmployee(null);
-            setHasSearchedById(false);
-            return;
-        }
-
-        try {
-            setLoading(true);
-            setErrorMessage("");
-            setMessage("")
-
-            const data = await GetEmployeeById(id);
-            setMessage(data?.message ?? '')
-
-            const emp = data?.result ?? data?.employee ?? data;
-            setFetchedEmployee(emp && emp.id ? emp : null);
-        } catch (err) {
-            setFetchedEmployee(null);
-            setErrorMessage(err?.message ?? "Something went wrong");
-        } finally {
-            setHasSearchedById(true);
-            setLoading(false);
-        }
-    };
-
-    const handleRemoveEmployeeById = async () => {
-        const id = employeeToRemoveId.trim();
-        if (!id) {
-            setErrorMessage(text.InvalidId);
-            return;
-        }
-
-        try {
-            setLoading(true);
-            setErrorMessage("");
-            setMessage("");
-
-            const data = await RemoveEmployeeById(id);
-            setMessage(data?.message || "Employee removed successfully");
-        } catch (err) {
-            setErrorMessage(err?.message ?? "Something went wrong");
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleLogWorkHours = async () => {
-        
-    }
-
-    const title = currentView === "add" ? text.AddTitle : text.AllTitle;
-
-    return (
-        <div>
-            <Navbar />
-
-            <div className={Style.container}>
-                <h1 className={Style.title}>{title}</h1>
-
-                <div className={Style.buttonRow}>
-                    <button
-                        className={`${Style.button} ${currentView === "all" ? Style.activeButton : ""}`}
-                        onClick={handleGetAllEmployees}
-                    >
-                        {text.ButtonAllEmployees}
-                    </button>
-
-                    <button
-                        className={`${Style.button} ${currentView === "add" ? Style.activeButton : ""}`}
-                        onClick={() => {
-                            setCurrentView("add");
-                            setErrorMessage("");
-                        }}
-                    >
-                        {text.ButtonAddEmployee}
-                    </button>
-
-                    <button
-                        className={`${Style.button} ${currentView === "get" ? Style.activeButton : ""}`}
-                        onClick={() => {
-                            setCurrentView("get");
-                            setErrorMessage("");
-                            setFetchedEmployee(null);
-                            setEmployeeId("");
-                            setHasSearchedById(false);
-                        }}
-                    >
-                        {text.ButtonGetEmployee}
-                    </button>
-
-                    <button
-                        className={`${Style.button} ${currentView === "remove" ? Style.activeButton : ""}`}
-                        onClick={() => setCurrentView("remove")}
-                    >
-                        {text.ButtonRemoveEmployee}
-                    </button>
-
-                    <button
-                        className={`${Style.button} ${currentView === "hours" ? Style.activeButton : ""}`}
-                        onClick={() => setCurrentView("hours")}
-                    >
-                        {text.ButtonLogHours}
-                    </button>
-                </div>
-
-                {loading && <p className={Style.subtext}>{text.Loading}</p>}
-                {errorMessage && <p className={Style.error}>{errorMessage}</p>}
-
-                {currentView === "all" && (
-                    <div className={Style.content}>
-                        {hasFetchedAll && !loading && !errorMessage && employees.length === 0 && (
-                            <div className={Style.helperCard}>
-                                <p>{text.NoEmployeeFound}</p>
-                            </div>
-                        )}
-
-                        {!loading && !errorMessage && employees.length > 0 && (
-                            <div className={Style.grid}>
-                                {employees.map((emp) => (
-                                    <div className={Style.employeeCard} key={emp.id}>
-                                        <div className={Style.employeeHeader}>
-                                            <div>
-                                                <div className={Style.employeeName}>{emp.name ?? "-"}</div>
-                                                <div className={Style.employeeMeta}>
-                                                    {text.Labels.Id}: <span className={Style.mono}>{emp.id}</span>
-                                                </div>
-                                            </div>
-
-                                            <div className={Style.employeePill}>
-                                                {text.Labels.HoursWorked}:{" "}
-                                                <span className={Style.mono}>{emp.hours_worked ?? 0}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className={Style.employeeDivider} />
-
-                                        <div className={Style.employeeRows}>
-                                            <div className={Style.employeeRow}>
-                                                <span className={Style.employeeKey}>{text.Labels.CurrentPay}</span>
-                                                <span className={Style.employeeVal}>{rupiah(emp.current_pay)}</span>
-                                            </div>
-
-                                            <div className={Style.employeeRow}>
-                                                <span className={Style.employeeKey}>{text.Labels.TotalPay}</span>
-                                                <span className={Style.employeeVal}>{rupiah(emp.total_pay)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {currentView === "add" && (
-                    <div className={Style.card}>
-                        <p className={Style.subtext}>{text.AddTitle}</p>
-
-                        <div className={Style.field}>
-                            <label className={Style.label}>{text.Labels.Name}</label>
-                            <input
-                                className={Style.input}
-                                placeholder={text.AddPlaceholder}
-                                value={employeeName}
-                                onChange={(e) => setEmployeeName(e.target.value)}
-                            />
-                        </div>
-
-                        <button
-                            className={Style.primaryButton}
-                            onClick={handleAddEmployee}
-                            disabled={loading || employeeName.trim().length === 0}
-                        >
-                            {text.AddEmployeeButton}
-                        </button>
-                    </div>
-                )}
-
-                {currentView === "get" && (
-                    <div className={Style.content}>
-                        <div className={Style.card}>
-                            <p className={Style.subtext}>{text.ButtonGetEmployee}</p>
-
-                            <div className={Style.field}>
-                                <label className={Style.label}>{text.Labels.Id}</label>
-                                <input
-                                    className={Style.input}
-                                    placeholder={text.EnterId}
-                                    value={employeeId}
-                                    onChange={(e) => {
-                                        setEmployeeId(e.target.value);
-                                        setHasSearchedById(false);
-                                        setFetchedEmployee(null);
-                                        setErrorMessage("");
-                                    }}
-                                />
-                            </div>
-
-                            <button
-                                className={Style.primaryButton}
-                                onClick={handleGetEmployeeById}
-                                disabled={loading || employeeId.trim().length === 0}
-                            >
-                                {text.GetButton}
-                            </button>
-                        </div>
-
-                        {!loading && !errorMessage && fetchedEmployee && (
-                            <div className={`${Style.employeeCard} ${Style.resultCard}`}>
-                                <div className={Style.employeeHeader}>
-                                    <div>
-                                        <div className={Style.employeeName}>{fetchedEmployee.name ?? "-"}</div>
-                                        <div className={Style.employeeMeta}>
-                                            {text.Labels.Id}: <span className={Style.mono}>{fetchedEmployee.id}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className={Style.employeePill}>
-                                        {text.Labels.HoursWorked}:{" "}
-                                        <span className={Style.mono}>{fetchedEmployee.hours_worked ?? 0}</span>
-                                    </div>
-                                </div>
-
-                                <div className={Style.employeeDivider} />
-
-                                <div className={Style.employeeRows}>
-                                    <div className={Style.employeeRow}>
-                                        <span className={Style.employeeKey}>{text.Labels.CurrentPay}</span>
-                                        <span className={Style.employeeVal}>{rupiah(fetchedEmployee.current_pay)}</span>
-                                    </div>
-
-                                    <div className={Style.employeeRow}>
-                                        <span className={Style.employeeKey}>{text.Labels.TotalPay}</span>
-                                        <span className={Style.employeeVal}>{rupiah(fetchedEmployee.total_pay)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {!loading && !errorMessage && hasSearchedById && !fetchedEmployee && (
-                            <div className={Style.helperCard}>
-                                <p>{text.NotFound}</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {currentView === "remove" && (
-                    <div className={Style.helperCard}>
-                        <p>{message}</p>
-                        <input onChange={(e) => { setEmployeeToRemoveId(e.target.value) }} placeholder={text.RemoveEmployeeInputPlaceholder}></input>
-                        <button onClick={handleRemoveEmployeeById}>{text.RemoveEmployeeButton}</button>
-                    </div>
-                )}
-
-                {currentView === "hours" && (
-                    <div className={Style.helperCard}>
-                        <input onChange={(e) => { setEmployeeHoursId(e.target.value) }} placeholder="Enter Employee Id"></input>
-
-                        <input onChange={(e) => { setEmployeeHoursAmount(e.target.value) }} placeholder="Enter Worked Hours"></input>
-
-                        <button>{text.ButtonLogHours}</button>
-                    </div>
-                )}
-            </div>
+function EmployeeCard({ emp, text, rupiah, variant = "list" }) {
+  return (
+    <div
+      className={`${Style.employeeCard} ${
+        variant === "result" ? Style.resultCard : ""
+      }`}
+    >
+      <div className={Style.employeeHeader}>
+        <div className={Style.employeeIdentity}>
+          <div className={Style.employeeName}>{emp?.name ?? "-"}</div>
+          <div className={Style.employeeMeta}>
+            {text.Labels.Id}:{" "}
+            <span className={Style.mono}>{emp?.id ?? "-"}</span>
+          </div>
         </div>
-    );
+
+        <div className={Style.employeePill} title={text.Labels.HoursWorked}>
+          <span className={Style.pillLabel}>{text.Labels.HoursWorked}</span>
+          <span className={Style.mono}>{emp?.hours_worked ?? 0}</span>
+        </div>
+      </div>
+
+      <div className={Style.employeeDivider} />
+
+      <div className={Style.employeeRows}>
+        <StatRow
+          label={text.Labels.CurrentPay}
+          value={rupiah(emp?.current_pay)}
+        />
+        <StatRow label={text.Labels.TotalPay} value={rupiah(emp?.total_pay)} />
+      </div>
+    </div>
+  );
+}
+
+function Employees() {
+  const [language] = useContext(languageContext);
+  const text = TEXT[language ?? "English"];
+
+  const [view, setView] = useState(VIEWS.ALL);
+
+  const [employees, setEmployees] = useState([]);
+  const [fetchedEmployee, setFetchedEmployee] = useState(null);
+
+  const [employeeName, setEmployeeName] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [employeeToRemoveId, setEmployeeToRemoveId] = useState("");
+  const [employeeHoursId, setEmployeeHoursId] = useState("");
+  const [employeeHoursAmount, setEmployeeHoursAmount] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
+
+  const [hasFetchedAll, setHasFetchedAll] = useState(false);
+  const [hasSearchedById, setHasSearchedById] = useState(false);
+
+  useEffect(() => {
+    document.title = text.PageTitle;
+  }, [text]);
+
+  const rupiah = useMemo(() => {
+    return (value) => `Rp ${Number(value ?? 0).toLocaleString("id-ID")}`;
+  }, []);
+
+  const resetFeedback = () => {
+    setErrorMessage("");
+    setMessage("");
+  };
+
+  const setActiveView = (nextView) => {
+    setView(nextView);
+    resetFeedback();
+
+    if (nextView === VIEWS.GET) {
+      setFetchedEmployee(null);
+      setEmployeeId("");
+      setHasSearchedById(false);
+    }
+
+    if (nextView === VIEWS.ADD) setEmployeeName("");
+    if (nextView === VIEWS.REMOVE) setEmployeeToRemoveId("");
+    if (nextView === VIEWS.HOURS) {
+      setEmployeeHoursId("");
+      setEmployeeHoursAmount("");
+    }
+  };
+
+  const run = async (fn, { onSuccess } = {}) => {
+    try {
+      setLoading(true);
+      resetFeedback();
+      await fn();
+      onSuccess?.();
+    } catch (err) {
+      setErrorMessage(err?.message ?? text.SomethingWentWrong);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllEmployees = async () => {
+    await run(async () => {
+      const data = await GetAll();
+      setEmployees(Array.isArray(data) ? data : []);
+      setHasFetchedAll(true);
+      setView(VIEWS.ALL);
+    });
+  };
+
+  const addEmployee = async () => {
+    const name = employeeName.trim();
+    if (!name) return;
+
+    await run(async () => {
+      await AddEmployee(name);
+      setEmployeeName("");
+      await fetchAllEmployees();
+    });
+  };
+
+  const getEmployeeById = async () => {
+    const id = employeeId.trim();
+    if (!id) {
+      setErrorMessage(text.InvalidId);
+      setFetchedEmployee(null);
+      setHasSearchedById(false);
+      return;
+    }
+
+    await run(async () => {
+      const data = await GetEmployeeById(id);
+      const emp = data?.result ?? data?.employee ?? data;
+      setFetchedEmployee(emp && emp.id ? emp : null);
+      setMessage(data?.message ?? "");
+      setHasSearchedById(true);
+    });
+  };
+
+  const removeEmployeeById = async () => {
+    const id = employeeToRemoveId.trim();
+    if (!id) {
+      setErrorMessage(text.InvalidId);
+      return;
+    }
+
+    await run(async () => {
+      const data = await RemoveEmployeeById(id);
+      setMessage(data?.message ?? text.SuccessRemoveFallback);
+      await fetchAllEmployees();
+    });
+  };
+
+  // ✅ Updated: Stay on HOURS page, show success or failure message
+  const logWorkHours = async () => {
+    const id = employeeHoursId.trim();
+    const hours = employeeHoursAmount.trim();
+
+    if (!id) {
+      setErrorMessage(text.InvalidId);
+      setMessage(text.Messages.HoursLogFailed(text.InvalidId));
+      return;
+    }
+
+    try {
+      setLoading(true);
+      resetFeedback();
+
+      const data = await LogHours(id, hours);
+
+      const name = data?.result?.name ?? "-";
+      const worked = data?.result?.hours_worked ?? "-";
+      const pay = rupiah(data?.result?.current_pay);
+
+      setMessage(text.Messages.HoursLogged(name, worked, pay));
+      setErrorMessage("");
+    } catch (err) {
+      const reason = err?.message ?? text.SomethingWentWrong;
+      setErrorMessage(reason);
+      setMessage(text.Messages.HoursLogFailed(reason));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const title = (() => {
+    if (view === VIEWS.ADD) return text.Titles.Add;
+    if (view === VIEWS.GET) return text.Titles.Get;
+    if (view === VIEWS.REMOVE) return text.Titles.Remove;
+    if (view === VIEWS.HOURS) return text.Titles.Hours;
+    return text.Titles.All;
+  })();
+
+  return (
+    <div>
+      <Navbar />
+
+      <div className={Style.container}>
+        <div className={Style.header}>
+          <h1 className={Style.title}>{title}</h1>
+          <p className={Style.subtitle}>{text.PageTitle}</p>
+        </div>
+
+        <div className={Style.buttonRow}>
+          <button
+            className={`${Style.button} ${
+              view === VIEWS.ALL ? Style.activeButton : ""
+            }`}
+            onClick={fetchAllEmployees}
+          >
+            {text.Tabs.All}
+          </button>
+
+          <button
+            className={`${Style.button} ${
+              view === VIEWS.ADD ? Style.activeButton : ""
+            }`}
+            onClick={() => setActiveView(VIEWS.ADD)}
+          >
+            {text.Tabs.Add}
+          </button>
+
+          <button
+            className={`${Style.button} ${
+              view === VIEWS.GET ? Style.activeButton : ""
+            }`}
+            onClick={() => setActiveView(VIEWS.GET)}
+          >
+            {text.Tabs.Get}
+          </button>
+
+          <button
+            className={`${Style.button} ${
+              view === VIEWS.REMOVE ? Style.activeButton : ""
+            }`}
+            onClick={() => setActiveView(VIEWS.REMOVE)}
+          >
+            {text.Tabs.Remove}
+          </button>
+
+          <button
+            className={`${Style.button} ${
+              view === VIEWS.HOURS ? Style.activeButton : ""
+            }`}
+            onClick={() => setActiveView(VIEWS.HOURS)}
+          >
+            {text.Tabs.Hours}
+          </button>
+        </div>
+
+        {loading && <p className={Style.subtext}>{text.Loading}</p>}
+        {errorMessage && <p className={Style.error}>{errorMessage}</p>}
+        {message && !errorMessage && <p className={Style.success}>{message}</p>}
+        {message && errorMessage && <p className={Style.error}>{message}</p>}
+
+        {view === VIEWS.ALL && (
+          <div className={Style.content}>
+            <div className={Style.toolbar}>
+              <button
+                className={Style.secondaryButton}
+                onClick={fetchAllEmployees}
+                disabled={loading}
+              >
+                {text.Buttons.Refresh}
+              </button>
+              <div className={Style.countPill}>
+                <span className={Style.mono}>{employees.length}</span>
+                <span className={Style.countLabel}>{text.Titles.All}</span>
+              </div>
+            </div>
+
+            {hasFetchedAll &&
+              !loading &&
+              !errorMessage &&
+              employees.length === 0 && (
+                <div className={Style.helperCard}>
+                  <p>{text.NoEmployeeFound}</p>
+                </div>
+              )}
+
+            {!loading && !errorMessage && employees.length > 0 && (
+              <div className={Style.grid}>
+                {employees.map((emp) => (
+                  <EmployeeCard
+                    key={emp.id}
+                    emp={emp}
+                    text={text}
+                    rupiah={rupiah}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {view === VIEWS.ADD && (
+          <div className={Style.card}>
+            <p className={Style.cardTitle}>{text.Titles.Add}</p>
+
+            <Field
+              label={text.Labels.Name}
+              value={employeeName}
+              placeholder={text.Inputs.AddName}
+              onChange={(v) => {
+                setEmployeeName(v);
+                resetFeedback();
+              }}
+              disabled={loading}
+            />
+
+            <button
+              className={Style.primaryButton}
+              onClick={addEmployee}
+              disabled={loading || employeeName.trim().length === 0}
+            >
+              {text.Buttons.Submit}
+            </button>
+          </div>
+        )}
+
+        {view === VIEWS.GET && (
+          <div className={Style.content}>
+            <div className={Style.card}>
+              <p className={Style.cardTitle}>{text.Titles.Get}</p>
+
+              <Field
+                label={text.Labels.Id}
+                value={employeeId}
+                placeholder={text.Inputs.GetId}
+                onChange={(v) => {
+                  setEmployeeId(v);
+                  setHasSearchedById(false);
+                  setFetchedEmployee(null);
+                  resetFeedback();
+                }}
+                disabled={loading}
+              />
+
+              <button
+                className={Style.primaryButton}
+                onClick={getEmployeeById}
+                disabled={loading || employeeId.trim().length === 0}
+              >
+                {text.Buttons.GetEmployee}
+              </button>
+            </div>
+
+            {!loading && !errorMessage && fetchedEmployee && (
+              <EmployeeCard
+                emp={fetchedEmployee}
+                text={text}
+                rupiah={rupiah}
+                variant="result"
+              />
+            )}
+
+            {!loading &&
+              !errorMessage &&
+              hasSearchedById &&
+              !fetchedEmployee && (
+                <div className={Style.helperCard}>
+                  <p>{text.EmployeeNotFound}</p>
+                </div>
+              )}
+          </div>
+        )}
+
+        {view === VIEWS.REMOVE && (
+          <div className={Style.card}>
+            <p className={Style.cardTitle}>{text.Titles.Remove}</p>
+
+            <Field
+              label={text.Labels.Id}
+              value={employeeToRemoveId}
+              placeholder={text.Inputs.RemoveId}
+              onChange={(v) => {
+                setEmployeeToRemoveId(v);
+                resetFeedback();
+              }}
+              disabled={loading}
+            />
+
+            <button
+              className={Style.primaryButtonDanger}
+              onClick={removeEmployeeById}
+              disabled={loading || employeeToRemoveId.trim().length === 0}
+            >
+              {text.Buttons.RemoveEmployee}
+            </button>
+          </div>
+        )}
+
+        {view === VIEWS.HOURS && (
+          <div className={Style.card}>
+            <p className={Style.cardTitle}>{text.Titles.Hours}</p>
+
+            <Field
+              label={text.Labels.Id}
+              value={employeeHoursId}
+              placeholder={text.Inputs.HoursEmployeeId}
+              onChange={(v) => {
+                setEmployeeHoursId(v);
+                resetFeedback();
+              }}
+              disabled={loading}
+            />
+
+            <Field
+              label={text.Labels.HoursWorked}
+              value={employeeHoursAmount}
+              placeholder={text.Inputs.HoursAmount}
+              onChange={(v) => {
+                setEmployeeHoursAmount(v);
+                resetFeedback();
+              }}
+              disabled={loading}
+              type="number"
+            />
+
+            <button
+              className={Style.primaryButton}
+              onClick={logWorkHours}
+              disabled={
+                loading ||
+                employeeHoursId.trim().length === 0 ||
+                employeeHoursAmount.trim().length === 0
+              }
+            >
+              {text.Buttons.LogHours}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default Employees;
