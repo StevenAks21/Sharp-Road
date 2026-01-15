@@ -179,6 +179,10 @@ function Employees() {
         }
     }
 
+    const handleLogWorkHours = async () => {
+        
+    }
+
     const title = currentView === "add" ? text.AddTitle : text.AllTitle;
 
     return (
@@ -386,7 +390,11 @@ function Employees() {
 
                 {currentView === "hours" && (
                     <div className={Style.helperCard}>
-                        <p>Log Work Hours Page</p>
+                        <input onChange={(e) => { setEmployeeHoursId(e.target.value) }} placeholder="Enter Employee Id"></input>
+
+                        <input onChange={(e) => { setEmployeeHoursAmount(e.target.value) }} placeholder="Enter Worked Hours"></input>
+
+                        <button>{text.ButtonLogHours}</button>
                     </div>
                 )}
             </div>
