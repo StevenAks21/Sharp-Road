@@ -22,8 +22,11 @@ function Income() {
   const [addQris, setAddQris] = useState("");
   const [addFnb, setAddFnb] = useState("");
 
+  //add income function
   const handleAdd = async () => {
-    console.log(addDate);
+    if (!addDate) return;
+    const [y, m, d] = addDate.split("-");
+    const dateForBackend = `${d}-${m}-${y}`;
   };
 
   return (
