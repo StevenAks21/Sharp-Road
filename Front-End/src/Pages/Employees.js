@@ -33,6 +33,8 @@ const TEXT = {
         EnterId: "Enter employee ID",
         NotFound: "Employee not found",
         InvalidId: "Please enter a valid employee ID",
+        RemoveEmployeeButton: "Remove Employee",
+        RemoveEmployeeInputPlaceholder: "Enter the ID",
     },
     Indonesian: {
         PageTitle: "SharpRoad - Halaman Karyawan",
@@ -47,7 +49,7 @@ const TEXT = {
         AddPlaceholder: "Masukkan nama karyawan",
         AddEmployeeButton: "Kirim",
         AddTitle: "Tambah Karyawan",
-        AllTitle: "Daftar Karyawan",
+        AllTitle: "Karyawan",
         Labels: {
             Id: "ID",
             Name: "Nama",
@@ -59,6 +61,8 @@ const TEXT = {
         EnterId: "Masukkan ID karyawan",
         NotFound: "Karyawan tidak ditemukan",
         InvalidId: "Masukkan ID karyawan yang valid",
+        RemoveEmployeeButton: "Hapus Karyawan",
+        RemoveEmployeeInputPlaceholder: "Masukkan ID karyawan",
     },
 };
 
@@ -77,6 +81,9 @@ function Employees() {
 
     const [employeeToRemoveId, setEmployeeToRemoveId] = useState("");
     const [message, setMessage] = useState("");
+
+    const [employeeHoursId, setEmployeeHoursId] = useState("");
+    const [employeeHoursAmount, setEmployeeHoursAmount] = useState("");
 
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -372,8 +379,8 @@ function Employees() {
                 {currentView === "remove" && (
                     <div className={Style.helperCard}>
                         <p>{message}</p>
-                        <input onChange={(e) => { setEmployeeToRemoveId(e.target.value) }}></input>
-                        <button onClick={handleRemoveEmployeeById}>Remove Employee</button>
+                        <input onChange={(e) => { setEmployeeToRemoveId(e.target.value) }} placeholder={text.RemoveEmployeeInputPlaceholder}></input>
+                        <button onClick={handleRemoveEmployeeById}>{text.RemoveEmployeeButton}</button>
                     </div>
                 )}
 
