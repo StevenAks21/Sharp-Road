@@ -27,6 +27,7 @@ function Income() {
     if (!addDate) return;
     const [y, m, d] = addDate.split("-");
     const dateForBackend = `${d}-${m}-${y}`;
+    console.log(dateForBackend)
   };
 
   return (
