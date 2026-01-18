@@ -6,7 +6,8 @@ const db = require(`../db/db`)
 require(`dotenv`).config()
 const secret = process.env.JWT_SECRET
 
-router.post("/", (req, res) => {
+router.post("/", (req, res, next) => {
+    try {
     if (!req.body) {
         return res.status(400).json({ error: true, message: "Body cannot be empty, must contain username and password" });
     }
@@ -29,9 +30,14 @@ router.post("/", (req, res) => {
         message: `Successfully logged in as ${username}`,
         token,
     });
+} catch (err) {
+    next(err);
+}
+    
 });
 
-router.get("/whoami", (req, res) => {
+router.get("/whoami", (req, res, next) => {
+    try {
     const auth = req.headers.authorization?.split(" ")[1];
     if (!auth) return res.status(401).json({ error: true, message: "No token provided" });
 
@@ -44,6 +50,9 @@ router.get("/whoami", (req, res) => {
         });
     } catch {
         res.status(403).json({ error: true, message: "Invalid or expired token" });
-    }
+    } 
+} catch (err) {
+    next(err);
+}
 });
 module.exports = router

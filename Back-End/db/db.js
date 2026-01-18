@@ -3,7 +3,8 @@ const Database = require("better-sqlite3");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
-const db = new Database("SharpRoad.db");
+const dbFile = process.env.DB_FILE || "SharpRoad.db";
+const db = new Database(dbFile);
 
 // ----------------------
 // PAYROLL HELPERS

@@ -3,7 +3,8 @@ const router = express.Router()
 const db = require(`../db/db`)
 
 // Create new item
-router.post('/newitem', (req, res) => {
+router.post('/newitem', (req, res, next) => {
+    try {
 
     if (!req.body) {
         return res.status(400).json({ error: true, message: `Body cannot be empty` })
@@ -30,11 +31,15 @@ router.post('/newitem', (req, res) => {
         error: false,
         message: `Successfully added ${name} into the database with ${stock} as stock!`
     })
+    } catch (err) {
+    next(err);
+}
 
-})
+});
 
 // Get all items
-router.get(`/getall`, (req, res) => {
+router.get(`/getall`, (req, res, next) => {
+    try {
     const getStatement = `SELECT * FROM inventory`
     const result = db.prepare(getStatement).all()
 
@@ -43,10 +48,14 @@ router.get(`/getall`, (req, res) => {
         message: `Successfully retrieved all stocks`,
         result
     })
-})
+    } catch (err) {
+    next(err);
+}
+});
 
 // Get item by ID
-router.get(`/get/:id`, (req, res) => {
+router.get(`/get/:id`, (req, res, next) => {
+    try {
     const id = req.params.id
     const selectStatement = `SELECT * FROM inventory WHERE id = ?`
 
@@ -61,10 +70,14 @@ router.get(`/get/:id`, (req, res) => {
         message: `Successfully retrieved item with id ${id}`,
         result
     })
-})
+    } catch (err) {
+    next(err);
+}
+});
 
 // Delete item
-router.delete(`/delete/:id`, (req, res) => {
+router.delete(`/delete/:id`, (req, res, next) => {
+    try {
     const id = req.params.id
     const checkStatement = `SELECT * FROM inventory WHERE id = ?`
 
@@ -82,10 +95,14 @@ router.delete(`/delete/:id`, (req, res) => {
         message: `Successfully deleted item with id ${id}`,
         item_deleted: result
     })
-})
+    } catch (err) {
+    next(err);
+}
+});
 
 // Update stock
-router.put(`/update/:id`, (req, res) => {
+router.put(`/update/:id`, (req, res, next) => {
+    try {
     const id = req.params.id
     const stock = req.body.stock
 
@@ -111,6 +128,9 @@ router.put(`/update/:id`, (req, res) => {
         oldStock: result,
         newStock: newResult
     })
-})
+    } catch (err) {
+    next(err);
+}
+});
 
 module.exports = router

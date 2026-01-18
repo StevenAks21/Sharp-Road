@@ -27,7 +27,8 @@ function toDisplay(date) {
 }
 
 // Add income record
-router.post("/add", (req, res) => {
+router.post("/add", (req, res, next) => {
+  try {
   const { date, cash = 0, qris = 0, fnb = 0, notes = "" } = req.body || {};
 
   if (!date)
@@ -45,21 +46,33 @@ router.post("/add", (req, res) => {
   } catch (e) {
     return res.status(400).json({ error: true, message: e.message });
   }
+  } catch (err) {
+    next(err);
+}
 });
 
 // Test route
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
+  try {
   res.status(200).json({ message: "Income route OK" });
+  } catch (err) {
+    next(err);
+}
 });
 
 // All-time income summary
-router.get("/alltime", (req, res) => {
+router.get("/alltime", (req, res, next) => {
+  try {
   const row = db.prepare(`SELECT SUM(total) AS total_income FROM income`).get();
   const dailyReport = db.prepare(`SELECT * FROM income`).all()
   return res.status(200).json({ error: false, alltime_income: row.total_income, dailyReport: dailyReport });
+  } catch (err) {
+    next(err);
+}
 });
 
-router.put(`/daily/`, (req, res) => {
+router.put(`/daily/`, (req, res, next) => {
+  try {
   const { date, cash = 0, qris = 0, fnb = 0, notes = "" } = req.body || {};
 
   if (!date) {
@@ -84,10 +97,14 @@ router.put(`/daily/`, (req, res) => {
   db.prepare(updateStatement).run(cash, qris, fnb, notes, total, cleanDate);
 
   return res.status(200).json({ error: false, message: `Successfully changed income statement for ${date}` });
+  } catch (err) {
+    next(err);
+}
 });
 
 // Daily income (input & output: dd-mm-yyyy)
-router.get(`/daily/:date`, (req, res) => {
+router.get(`/daily/:date`, (req, res, next) => {
+  try{
   const rawDate = req.params.date;
   if (!rawDate) return res.status(400).json({ error: true, message: `Date cannot be empty!` });
 
@@ -100,10 +117,14 @@ router.get(`/daily/:date`, (req, res) => {
 
   result.date = toDisplay(result.date);
   return res.status(200).json({ error: false, result: result });
+  } catch (err) {
+    next(err);
+}
 });
 
 // Weekly income (7 days from given date, input/output: dd-mm-yyyy)
-router.get(`/weekly`, (req, res) => {
+router.get(`/weekly`, (req, res, next) => {
+  try{
   const { date } = req.query;
   if (!date) return res.status(400).json({ error: true, message: `Date cannot be empty!` });
 
@@ -147,10 +168,14 @@ router.get(`/weekly`, (req, res) => {
     end: toDisplay(end),
     result: result
   });
+  } catch (err) {
+    next(err);
+}
 });
 
 // Monthly income (month based on provided dd-mm-yyyy, day ignored)
-router.get(`/monthly`, (req, res) => {
+router.get(`/monthly`, (req, res, next) => {
+  try {
   const { date } = req.query;
   if (!date) return res.status(400).json({ error: true, message: `Date cannot be empty!` });
 
@@ -181,6 +206,9 @@ router.get(`/monthly`, (req, res) => {
     end: toDisplay(end),
     result: result
   });
+  } catch (err) {
+    next(err);
+}
 });
 
 module.exports = router;

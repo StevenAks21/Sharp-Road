@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db/db");
 
-router.post("/add", (req, res) => {
+router.post("/add", (req, res, next) => {
+  try {
   if (!req.body) {
     return res.status(400).json({ error: true, message: "Body cannot be empty!" });
   }
@@ -23,15 +24,23 @@ router.post("/add", (req, res) => {
   }
 
   return res.status(200).json({ error: false, result: result });
+} catch (err) {
+    next(err);
+}
 });
 
-router.get("/getall", (req, res) => {
+router.get("/getall", (req, res, next) => {
+  try {
   const statement = "SELECT * FROM employees";
   const result = db.prepare(statement).all();
   return res.status(200).json({ error: false, result: result });
+  } catch (err) {
+    next(err);
+}
 });
 
-router.get("/get/:id", (req, res) => {
+router.get("/get/:id", (req, res, next) => {
+  try {
   if (!req.params.id) {
     return res.status(400).json({
       error: true,
@@ -50,9 +59,13 @@ router.get("/get/:id", (req, res) => {
   } else {
     return res.status(200).json({ error: false, result: result });
   }
+  } catch (err) {
+    next(err);
+}
 });
 
-router.delete("/delete", (req, res) => {
+router.delete("/delete", (req, res, next) => {
+  try {
   const { id } = req.body || {};
 
   if (id == null) {
@@ -80,9 +93,13 @@ router.delete("/delete", (req, res) => {
     error: false,
     message: `Successfully deleted employee with id ${id}`,
   });
+  } catch (err) {
+    next(err);
+}
 });
 
-router.put("/addhours", (req, res) => {
+router.put("/addhours", (req, res, next) => {
+  try {
   const { id, hours } = req.body || {};
 
   if (id == null || hours == null) {
@@ -117,6 +134,9 @@ router.put("/addhours", (req, res) => {
     message: `Added ${hours} hours to employee ID ${id}`,
     result: updated,
   });
+  } catch (err) {
+    next(err);
+}
 });
 
 module.exports = router;
