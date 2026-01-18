@@ -11,6 +11,7 @@ const TEXT = {
         Users: "User Info",
         Inventory: "Inventory",
         Switch: "ID",
+        Booking: 'Booking'
     },
     Indonesian: {
         Home: "Beranda",
@@ -19,6 +20,7 @@ const TEXT = {
         Users: "Informasi Pengguna",
         Inventory: "Inventaris",
         Switch: "EN",
+        Booking: 'pemesanan'
     }
 };
 
@@ -38,6 +40,7 @@ function Navbar() {
                 <NavLink to="/income" className={navClass}>{text.Income}</NavLink>
                 <NavLink to="/userinfo" className={navClass}>{text.Users}</NavLink>
                 <NavLink to="/inventory" className={navClass}>{text.Inventory}</NavLink>
+                <NavLink to="/booking" className={navClass}>{text.Booking}</NavLink>
             </div>
 
             <button

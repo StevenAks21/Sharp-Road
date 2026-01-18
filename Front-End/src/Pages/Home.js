@@ -1,5 +1,5 @@
 import Navbar from "../Components/Navbar";
-import { useEffect, useMemo, useState, useContext } from "react";
+import { useEffect, useMemo, useState, useContext, useCallback } from "react";
 import { languageContext } from "../Contexts";
 import style from "../Style/Home.module.css";
 import { FetchName } from "../Services/Home/FetchName";
@@ -68,7 +68,6 @@ function formatDateForDisplay(dateStr) {
 
 function DailyTable({ title, records, text, fmtNumber }) {
   const safeRecords = (records ?? []).filter(Boolean);
-
   if (safeRecords.length === 0) return null;
 
   const sorted = [...safeRecords].sort((a, b) => {
@@ -162,16 +161,16 @@ function Home() {
     return nf.format(num);
   };
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const userData = await FetchName();
       setUser(userData?.username ?? null);
     } catch (err) {
       // ignore
     }
-  };
+  }, []);
 
-  const fetchIncome = async () => {
+  const fetchIncome = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -184,7 +183,10 @@ function Home() {
       const todayBackend = toBackendDDMMYYYY(today);
       const yestBackend = toBackendDDMMYYYY(yesterday);
 
-      const [tRes, yRes] = await Promise.all([Daily(todayBackend), Daily(yestBackend)]);
+      const [tRes, yRes] = await Promise.all([
+        Daily(todayBackend),
+        Daily(yestBackend),
+      ]);
 
       if (tRes?.error || yRes?.error) {
         setError(tRes?.message ?? yRes?.message ?? text.failedIncome);
@@ -197,13 +199,13 @@ function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [text.failedIncome]);
 
   useEffect(() => {
     document.title = text.PageTitle;
     fetchUser();
     fetchIncome();
-  }, [text.PageTitle]);
+  }, [text.PageTitle, fetchUser, fetchIncome]);
 
   const rows = useMemo(() => {
     return [todayData, yesterdayData].filter(Boolean);

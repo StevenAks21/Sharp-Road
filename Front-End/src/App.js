@@ -7,6 +7,7 @@ import Employees from "./Pages/Employees";
 import Income from "./Pages/Income.js";
 import UserInfo from "./Pages/UserInfo.js";
 import Inventory from "./Pages/Inventory.js";
+import Booking from './Pages/Booking.js'
 import RequireSetup from "./Guard/RequireSetup.js";
 import { insideContext, languageContext } from "./Contexts";
 
@@ -69,6 +70,15 @@ function App() {
             element={
               <RequireSetup>
                 <Inventory />
+              </RequireSetup>
+            }
+          />
+
+          <Route
+            path='/booking'
+            element={
+              <RequireSetup>
+                <Booking />
               </RequireSetup>
             }
           />
