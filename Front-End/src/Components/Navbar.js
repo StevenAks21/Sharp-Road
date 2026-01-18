@@ -8,7 +8,7 @@ const TEXT = {
         Home: "Home",
         Employees: "Employees",
         Income: "Income",
-        Users: "Users",
+        Users: "User Info",
         Inventory: "Inventory",
         Switch: "ID",
     },
@@ -16,7 +16,7 @@ const TEXT = {
         Home: "Beranda",
         Employees: "Karyawan",
         Income: "Pendapatan",
-        Users: "Pengguna",
+        Users: "Informasi Pengguna",
         Inventory: "Inventaris",
         Switch: "EN",
     }
@@ -36,7 +36,7 @@ function Navbar() {
                 <NavLink to="/home" className={navClass}>{text.Home}</NavLink>
                 <NavLink to="/employees" className={navClass}>{text.Employees}</NavLink>
                 <NavLink to="/income" className={navClass}>{text.Income}</NavLink>
-                <NavLink to="/users" className={navClass}>{text.Users}</NavLink>
+                <NavLink to="/userinfo" className={navClass}>{text.Users}</NavLink>
                 <NavLink to="/inventory" className={navClass}>{text.Inventory}</NavLink>
             </div>
 

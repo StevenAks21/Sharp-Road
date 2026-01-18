@@ -5,6 +5,7 @@ import Welcome from "./Pages/Welcome";
 import Home from "./Pages/Home";
 import Employees from "./Pages/Employees";
 import Income from "./Pages/Income.js";
+import UserInfo from "./Pages/UserInfo.js";
 import RequireSetup from "./Guard/RequireSetup.js";
 import { insideContext, languageContext } from "./Contexts";
 
@@ -50,6 +51,15 @@ function App() {
             element={
               <RequireSetup>
                 <Income />
+              </RequireSetup>
+            }
+          />
+
+          <Route
+            path='userinfo'
+            element={
+              <RequireSetup>
+                <UserInfo />
               </RequireSetup>
             }
           />
