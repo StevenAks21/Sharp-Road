@@ -16,7 +16,6 @@ export async function Add(date, cash, fnb, qris) {
     const response = await fetch(fetchUrl, args)
     const data = await response.json()
 
-    console.log(args)
     return data;
 
 
