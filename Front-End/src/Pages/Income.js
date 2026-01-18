@@ -23,8 +23,7 @@ const TEXT = {
   English: {
     documentTitle: "SharpRoad - Income Management",
     title: "Income Management",
-    subtitle:
-      "Track, update, and review income in a clean black and white dashboard.",
+    subtitle: "Track, update, and review income in a clean black and white dashboard.",
 
     addIncome: "Add Income",
     changeIncome: "Change Income",
@@ -33,9 +32,9 @@ const TEXT = {
     getMonthlyIncome: "Get Monthly Income",
     getAllTimeIncome: "Get All Time Income",
 
-    cashAmount: "Cash Amount",
-    fnbAmount: "FNB Amount",
-    qrisAmount: "QRIS Amount",
+    cashAmount: "Cash",
+    fnbAmount: "FNB",
+    qrisAmount: "QRIS",
     notes: "Notes",
 
     addSuccessMessage: "Successfully added income",
@@ -58,12 +57,14 @@ const TEXT = {
 
     helper: "Pick a view above to get started.",
     totals: "Totals",
+    dailyReport: "Daily Report",
     start: "Start",
     end: "End",
     totalIncome: "Total Income",
     totalRental: "Total Rental",
     records: "Records",
     loading: "Loading...",
+    total: "Total",
   },
   Indonesian: {
     documentTitle: "SharpRoad - Manajemen Pemasukan",
@@ -77,9 +78,9 @@ const TEXT = {
     getMonthlyIncome: "Lihat Pemasukan Bulanan",
     getAllTimeIncome: "Lihat Pemasukan Sepanjang Waktu",
 
-    cashAmount: "Jumlah Tunai",
-    fnbAmount: "Jumlah FNB",
-    qrisAmount: "Jumlah QRIS",
+    cashAmount: "Tunai",
+    fnbAmount: "FNB",
+    qrisAmount: "QRIS",
     notes: "Catatan",
 
     addSuccessMessage: "Pemasukan berhasil terekam",
@@ -102,12 +103,14 @@ const TEXT = {
 
     helper: "Pilih menu di atas untuk mulai.",
     totals: "Ringkasan",
+    dailyReport: "Laporan Harian",
     start: "Mulai",
     end: "Sampai",
     totalIncome: "Total Pemasukan",
     totalRental: "Total Rental",
     records: "Data",
     loading: "Memuat...",
+    total: "Total",
   },
 };
 
@@ -162,10 +165,107 @@ function TotalsCard({ title, subtitle, rows }) {
   );
 }
 
+function formatDateForDisplay(dateStr) {
+  if (!dateStr || typeof dateStr !== "string") return dateStr;
+
+  // yyyy-mm-dd -> dd-mm-yyyy
+  const iso = dateStr.split("-");
+  if (iso.length === 3 && iso[0].length === 4) {
+    const [yyyy, mm, dd] = iso;
+    return `${dd}-${mm}-${yyyy}`;
+  }
+
+  return dateStr;
+}
+
+function DailyReportList({ title, records, text, fmtNumber }) {
+  if (!records || records.length === 0) return null;
+
+  const safeRecords = [...records].sort((a, b) => {
+    const ad = a?.date ?? "";
+    const bd = b?.date ?? "";
+    return ad.localeCompare(bd);
+  });
+
+  return (
+    <div className={`${style.employeeCard} ${style.reportCard}`}>
+      <div className={style.employeeHeader}>
+        <div className={style.employeeIdentity}>
+          <div className={style.employeeName}>{title}</div>
+          <div className={style.employeeMeta}>
+            {text.records}: {safeRecords.length}
+          </div>
+        </div>
+
+        <div className={style.employeePill}>
+          <span className={style.pillLabel}>B/W</span>
+          <span className={style.mono}>✓</span>
+        </div>
+      </div>
+
+      <div className={style.employeeDivider} />
+
+      <div className={style.reportTableWrap}>
+        <table className={style.reportTable}>
+          <thead>
+            <tr>
+              <th className={style.thDate}>{text.dailyDate}</th>
+              <th className={style.thNum}>{text.cashAmount}</th>
+              <th className={style.thNum}>{text.qrisAmount}</th>
+              <th className={style.thNum}>{text.fnbAmount}</th>
+              <th className={style.thNum}>{text.total}</th>
+              <th className={style.thNotes}>{text.notes}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {safeRecords.map((r, idx) => {
+              const date = formatDateForDisplay(r?.date) || "-";
+              const cash = r?.cash ?? 0;
+              const qris = r?.qris ?? 0;
+              const fnb = r?.fnb ?? 0;
+              const total = r?.total ?? 0;
+              const notes = (r?.notes ?? "").toString();
+
+              return (
+                <tr key={`${r?.date ?? "row"}-${idx}`}>
+                  <td className={`${style.tdDate} ${style.mono}`}>{date}</td>
+                  <td className={`${style.tdNum} ${style.mono}`}>{fmtNumber(cash)}</td>
+                  <td className={`${style.tdNum} ${style.mono}`}>{fmtNumber(qris)}</td>
+                  <td className={`${style.tdNum} ${style.mono}`}>{fmtNumber(fnb)}</td>
+                  <td className={`${style.tdNum} ${style.tdTotal} ${style.mono}`}>{fmtNumber(total)}</td>
+                  <td className={style.tdNotes} title={notes || ""}>
+                    {notes || "-"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className={style.reportHint}>
+        Tip: scroll sideways on mobile →
+      </div>
+    </div>
+  );
+}
+
 function Income() {
   const [language] = useContext(languageContext);
   const text = useMemo(() => TEXT[language ?? "English"], [language]);
   const [view, setView] = useState(views.add);
+
+  const nf = useMemo(() => {
+    const locale = language === "Indonesian" ? "id-ID" : "en-US";
+    return new Intl.NumberFormat(locale);
+  }, [language]);
+
+  const fmtNumber = (v) => {
+    const num = Number(v ?? 0);
+    if (!Number.isFinite(num)) return "0";
+    return nf.format(num);
+  };
 
   useEffect(() => {
     document.title = text.documentTitle;
@@ -393,6 +493,10 @@ function Income() {
     return text.getAllTimeIncome;
   })();
 
+  const weeklyDailyReport = weeklyData?.result?.[5]?.daily_report ?? [];
+  const monthlyDailyReport = monthlyData?.result?.[5]?.daily_report ?? [];
+  const alltimeDailyReport = alltimeData?.dailyReport ?? [];
+
   return (
     <div>
       <Navbar />
@@ -498,11 +602,7 @@ function Income() {
               type="number"
             />
 
-            <button
-              className={style.primaryButton}
-              onClick={handleAdd}
-              disabled={loading || !addDate}
-            >
+            <button className={style.primaryButton} onClick={handleAdd} disabled={loading || !addDate}>
               {text.addIncome}
             </button>
           </div>
@@ -513,9 +613,7 @@ function Income() {
             <p className={style.cardTitle}>{text.changeIncome}</p>
 
             {changeError && <p className={style.error}>{changeError}</p>}
-            {changeMessage && !changeError && (
-              <p className={style.success}>{changeMessage}</p>
-            )}
+            {changeMessage && !changeError && <p className={style.success}>{changeMessage}</p>}
 
             <Field
               label={text.dailyDate}
@@ -562,11 +660,7 @@ function Income() {
               type="text"
             />
 
-            <button
-              className={style.primaryButton}
-              onClick={handleChange}
-              disabled={loading || !changeDate}
-            >
+            <button className={style.primaryButton} onClick={handleChange} disabled={loading || !changeDate}>
               {text.changeButton}
             </button>
           </div>
@@ -578,9 +672,7 @@ function Income() {
               <p className={style.cardTitle}>{text.getDailyIncome}</p>
 
               {dailyError && <p className={style.error}>{dailyError}</p>}
-              {dailyMessage && !dailyError && (
-                <p className={style.success}>{dailyMessage}</p>
-              )}
+              {dailyMessage && !dailyError && <p className={style.success}>{dailyMessage}</p>}
 
               <Field
                 label={text.dailyDate}
@@ -595,26 +687,31 @@ function Income() {
                 type="date"
               />
 
-              <button
-                className={style.primaryButton}
-                onClick={handleDaily}
-                disabled={loading || !dailyDate}
-              >
+              <button className={style.primaryButton} onClick={handleDaily} disabled={loading || !dailyDate}>
                 {text.getDailyButton}
               </button>
             </div>
 
             {!loading && !dailyError && dailyData?.result && (
-              <TotalsCard
-                title={text.totals}
-                subtitle={`${text.dailyDate}: ${dailyData.result.date ?? "-"}`}
-                rows={[
-                  { label: text.cashAmount, value: dailyData.result.cash ?? 0 },
-                  { label: text.qrisAmount, value: dailyData.result.qris ?? 0 },
-                  { label: text.fnbAmount, value: dailyData.result.fnb ?? 0 },
-                  { label: "Total", value: dailyData.result.total ?? 0 },
-                ]}
-              />
+              <div className={style.resultsGrid}>
+                <TotalsCard
+                  title={text.totals}
+                  subtitle={`${text.dailyDate}: ${dailyData.result.date ?? "-"}`}
+                  rows={[
+                    { label: text.cashAmount, value: fmtNumber(dailyData.result.cash ?? 0) },
+                    { label: text.qrisAmount, value: fmtNumber(dailyData.result.qris ?? 0) },
+                    { label: text.fnbAmount, value: fmtNumber(dailyData.result.fnb ?? 0) },
+                    { label: text.total, value: fmtNumber(dailyData.result.total ?? 0) },
+                  ]}
+                />
+
+                <DailyReportList
+                  title={text.dailyReport}
+                  records={[dailyData.result]}
+                  text={text}
+                  fmtNumber={fmtNumber}
+                />
+              </div>
             )}
           </div>
         )}
@@ -625,9 +722,7 @@ function Income() {
               <p className={style.cardTitle}>{text.getWeeklyIncome}</p>
 
               {weeklyError && <p className={style.error}>{weeklyError}</p>}
-              {weeklyMessage && !weeklyError && (
-                <p className={style.success}>{weeklyMessage}</p>
-              )}
+              {weeklyMessage && !weeklyError && <p className={style.success}>{weeklyMessage}</p>}
 
               <Field
                 label={text.dailyDate}
@@ -642,28 +737,33 @@ function Income() {
                 type="date"
               />
 
-              <button
-                className={style.primaryButton}
-                onClick={handleWeekly}
-                disabled={loading || !weeklyDate}
-              >
+              <button className={style.primaryButton} onClick={handleWeekly} disabled={loading || !weeklyDate}>
                 {text.getWeeklyIncome}
               </button>
             </div>
 
             {!loading && !weeklyError && weeklyData?.result && (
-              <TotalsCard
-                title={text.totals}
-                subtitle={`${text.start}: ${weeklyData.start} • ${text.end}: ${weeklyData.end}`}
-                rows={[
-                  { label: text.totalIncome, value: weeklyData?.result?.[0]?.total_income ?? 0 },
-                  { label: text.cashAmount, value: weeklyData?.result?.[2]?.cash_total ?? 0 },
-                  { label: text.qrisAmount, value: weeklyData?.result?.[3]?.qris_total ?? 0 },
-                  { label: text.fnbAmount, value: weeklyData?.result?.[1]?.fnb_total ?? 0 },
-                  { label: text.totalRental, value: weeklyData?.result?.[4]?.totalRental ?? 0 },
-                  { label: text.records, value: weeklyData?.result?.[5]?.daily_report?.length ?? 0 },
-                ]}
-              />
+              <div className={style.resultsGrid}>
+                <TotalsCard
+                  title={text.totals}
+                  subtitle={`${text.start}: ${weeklyData.start} • ${text.end}: ${weeklyData.end}`}
+                  rows={[
+                    { label: text.totalIncome, value: fmtNumber(weeklyData?.result?.[0]?.total_income ?? 0) },
+                    { label: text.cashAmount, value: fmtNumber(weeklyData?.result?.[2]?.cash_total ?? 0) },
+                    { label: text.qrisAmount, value: fmtNumber(weeklyData?.result?.[3]?.qris_total ?? 0) },
+                    { label: text.fnbAmount, value: fmtNumber(weeklyData?.result?.[1]?.fnb_total ?? 0) },
+                    { label: text.totalRental, value: fmtNumber(weeklyData?.result?.[4]?.totalRental ?? 0) },
+                    { label: text.records, value: fmtNumber(weeklyDailyReport.length ?? 0) },
+                  ]}
+                />
+
+                <DailyReportList
+                  title={text.dailyReport}
+                  records={weeklyDailyReport}
+                  text={text}
+                  fmtNumber={fmtNumber}
+                />
+              </div>
             )}
           </div>
         )}
@@ -674,9 +774,7 @@ function Income() {
               <p className={style.cardTitle}>{text.getMonthlyIncome}</p>
 
               {monthlyError && <p className={style.error}>{monthlyError}</p>}
-              {monthlyMessage && !monthlyError && (
-                <p className={style.success}>{monthlyMessage}</p>
-              )}
+              {monthlyMessage && !monthlyError && <p className={style.success}>{monthlyMessage}</p>}
 
               <Field
                 label={text.dailyDate}
@@ -691,28 +789,33 @@ function Income() {
                 type="date"
               />
 
-              <button
-                className={style.primaryButton}
-                onClick={handleMonthly}
-                disabled={loading || !monthlyDate}
-              >
+              <button className={style.primaryButton} onClick={handleMonthly} disabled={loading || !monthlyDate}>
                 {text.getMonthlyIncome}
               </button>
             </div>
 
             {!loading && !monthlyError && monthlyData?.result && (
-              <TotalsCard
-                title={text.totals}
-                subtitle={`${text.start}: ${monthlyData.start} • ${text.end}: ${monthlyData.end}`}
-                rows={[
-                  { label: text.totalIncome, value: monthlyData?.result?.[0]?.total_income ?? 0 },
-                  { label: text.cashAmount, value: monthlyData?.result?.[2]?.cash_total ?? 0 },
-                  { label: text.qrisAmount, value: monthlyData?.result?.[3]?.qris_total ?? 0 },
-                  { label: text.fnbAmount, value: monthlyData?.result?.[1]?.fnb_total ?? 0 },
-                  { label: text.totalRental, value: monthlyData?.result?.[4]?.totalRental ?? 0 },
-                  { label: text.records, value: monthlyData?.result?.[5]?.daily_report?.length ?? 0 },
-                ]}
-              />
+              <div className={style.resultsGrid}>
+                <TotalsCard
+                  title={text.totals}
+                  subtitle={`${text.start}: ${monthlyData.start} • ${text.end}: ${monthlyData.end}`}
+                  rows={[
+                    { label: text.totalIncome, value: fmtNumber(monthlyData?.result?.[0]?.total_income ?? 0) },
+                    { label: text.cashAmount, value: fmtNumber(monthlyData?.result?.[2]?.cash_total ?? 0) },
+                    { label: text.qrisAmount, value: fmtNumber(monthlyData?.result?.[3]?.qris_total ?? 0) },
+                    { label: text.fnbAmount, value: fmtNumber(monthlyData?.result?.[1]?.fnb_total ?? 0) },
+                    { label: text.totalRental, value: fmtNumber(monthlyData?.result?.[4]?.totalRental ?? 0) },
+                    { label: text.records, value: fmtNumber(monthlyDailyReport.length ?? 0) },
+                  ]}
+                />
+
+                <DailyReportList
+                  title={text.dailyReport}
+                  records={monthlyDailyReport}
+                  text={text}
+                  fmtNumber={fmtNumber}
+                />
+              </div>
             )}
           </div>
         )}
@@ -720,36 +823,37 @@ function Income() {
         {view === views.alltime && (
           <div className={style.content}>
             {alltimeError && <p className={style.error}>{alltimeError}</p>}
-            {alltimeMessage && !alltimeError && (
-              <p className={style.success}>{alltimeMessage}</p>
-            )}
+            {alltimeMessage && !alltimeError && <p className={style.success}>{alltimeMessage}</p>}
 
             <div className={style.toolbar}>
-              <button
-                className={style.secondaryButton}
-                onClick={handleAlltime}
-                disabled={loading}
-              >
+              <button className={style.secondaryButton} onClick={handleAlltime} disabled={loading}>
                 {text.getAlltimeButton}
               </button>
 
               <div className={style.countPill}>
-                <span className={style.mono}>
-                  {alltimeData?.dailyReport?.length ?? 0}
-                </span>
+                <span className={style.mono}>{fmtNumber(alltimeData?.dailyReport?.length ?? 0)}</span>
                 <span className={style.countLabel}>{text.records}</span>
               </div>
             </div>
 
             {!loading && !alltimeError && alltimeData && (
-              <TotalsCard
-                title={text.totals}
-                subtitle=""
-                rows={[
-                  { label: text.totalIncome, value: alltimeData.alltime_income ?? 0 },
-                  { label: text.records, value: alltimeData.dailyReport?.length ?? 0 },
-                ]}
-              />
+              <div className={style.resultsGrid}>
+                <TotalsCard
+                  title={text.totals}
+                  subtitle=""
+                  rows={[
+                    { label: text.totalIncome, value: fmtNumber(alltimeData.alltime_income ?? 0) },
+                    { label: text.records, value: fmtNumber(alltimeDailyReport.length ?? 0) },
+                  ]}
+                />
+
+                <DailyReportList
+                  title={text.dailyReport}
+                  records={alltimeDailyReport}
+                  text={text}
+                  fmtNumber={fmtNumber}
+                />
+              </div>
             )}
 
             {!loading && !alltimeError && !alltimeData && (

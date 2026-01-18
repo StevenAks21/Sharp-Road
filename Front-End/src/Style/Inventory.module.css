@@ -1,4 +1,3 @@
-/* Income.module.css */
 .container {
   min-height: 100vh;
   background-color: #000000;
@@ -118,15 +117,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.resultsGrid {
-  width: 100%;
-  margin-top: 1.25rem;
-  display: grid;
-  grid-template-columns: 1fr 1.6fr;
-  gap: 1rem;
-  align-items: start;
 }
 
 .toolbar {
@@ -269,18 +259,26 @@
   transform: none;
 }
 
-.employeeCard {
+.grid {
   width: 100%;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.employeeCard {
   background: #ffffff;
   color: #000000;
   border-radius: 18px;
-  padding: 1.1rem 1.1rem;
+  padding: 1.25rem 1.25rem;
   border: 1px solid rgba(0, 0, 0, 0.12);
   transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .employeeCard:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
 }
 
@@ -334,7 +332,7 @@
 .employeeDivider {
   height: 1px;
   background: rgba(0, 0, 0, 0.12);
-  margin: 0.9rem 0;
+  margin: 1rem 0;
 }
 
 .employeeRows {
@@ -362,7 +360,8 @@
 }
 
 .mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 .helperCard {
@@ -378,101 +377,11 @@
 }
 
 .resultCard {
-  margin-top: 0;
-  max-width: none;
-}
-
-.reportCard {
-  margin-top: 0;
-}
-
-.reportTableWrap {
   width: 100%;
-  overflow-x: auto;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  max-width: 520px;
+  margin-top: 1.5rem;
 }
 
-.reportTable {
-  width: 100%;
-  min-width: 720px;
-  border-collapse: collapse;
-  font-size: 0.92rem;
-  background: #ffffff;
-}
-
-.reportTable thead th {
-  position: sticky;
-  top: 0;
-  background: #f6f6f6;
-  z-index: 1;
-  text-align: left;
-  font-weight: 900;
-  padding: 0.75rem 0.75rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  white-space: nowrap;
-}
-
-.reportTable tbody td {
-  padding: 0.7rem 0.75rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  vertical-align: middle;
-}
-
-.reportTable tbody tr:nth-child(even) {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.reportTable tbody tr:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.thDate,
-.tdDate {
-  width: 140px;
-  white-space: nowrap;
-}
-
-.thNum,
-.tdNum {
-  width: 120px;
-  text-align: right;
-}
-
-.tdNum {
-  font-weight: 800;
-}
-
-.tdTotal {
-  font-weight: 950;
-}
-
-.thNotes,
-.tdNotes {
-  width: 260px;
-}
-
-.tdNotes {
-  max-width: 260px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgba(0, 0, 0, 0.75);
-}
-
-.reportHint {
-  margin-top: 0.65rem;
-  font-size: 0.85rem;
-  color: rgba(0, 0, 0, 0.55);
-}
-
-@media (max-width: 980px) {
-  .resultsGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Responsive */
 @media (max-width: 560px) {
   .container {
     padding: 1.25rem;
@@ -493,9 +402,5 @@
 
   .countPill {
     justify-content: center;
-  }
-
-  .reportHint {
-    text-align: center;
   }
 }
