@@ -5,6 +5,9 @@ import style from "../Style/Income.module.css";
 import { Add } from "../Services/Income/Add";
 import { Change } from '../Services/Income/Change'
 import { Daily } from '../Services/Income/Daily'
+import { Weekly } from "../Services/Income/Weekly";
+import { Monthly } from "../Services/Income/Monthly";
+
 
 const views = {
   add: "add",
@@ -37,6 +40,12 @@ const TEXT = {
     dailySuccessMessage: "Daily income loaded",
     noDailyDateError: "Please select a date.",
 
+    weeklySuccessMessage: "Weekly income loaded",
+    noWeeklyDateError: "Please select a date.",
+    monthlySuccessMessage: "Monthly income loaded",
+    noMonthlyDateError: "Please select a date.",
+
+
   },
   Indonesian: {
     documentTitle: "Manajemen Pemasukan",
@@ -58,6 +67,12 @@ const TEXT = {
     getDailyButton: "Lihat Pemasukan Harian",
     dailySuccessMessage: "Pemasukan harian berhasil dimuat",
     noDailyDateError: "Pilih tanggal dulu.",
+
+    weeklySuccessMessage: "Pemasukan mingguan berhasil dimuat",
+    noWeeklyDateError: "Pilih tanggal dulu.",
+    monthlySuccessMessage: "Pemasukan bulanan berhasil dimuat",
+    noMonthlyDateError: "Pilih tanggal dulu.",
+
   },
 };
 
@@ -223,6 +238,101 @@ function DailyIncomePage({
   );
 }
 
+function WeeklyIncomePage({
+  text,
+  weeklyDate,
+  setWeeklyDate,
+  handleWeekly,
+  weeklyError,
+  weeklyErrorMessage,
+  weeklyFinished,
+  weeklySuccessMessage,
+  weeklyData,
+}) {
+  // Backend: result = [totalIncome, totalFNB, totalCash, totalQris, totalRental, dailyReport]
+  const totalIncome = weeklyData?.result?.[0]?.total_income ?? 0;
+  const totalFnb = weeklyData?.result?.[1]?.fnb_total ?? 0;
+  const totalCash = weeklyData?.result?.[2]?.cash_total ?? 0;
+  const totalQris = weeklyData?.result?.[3]?.qris_total ?? 0;
+  const totalRental = weeklyData?.result?.[4]?.totalRental ?? 0;
+
+  return (
+    <>
+      {weeklyFinished && !weeklyError && <p>{weeklySuccessMessage}</p>}
+      {weeklyError && <p>{weeklyErrorMessage}</p>}
+
+      <input
+        type="date"
+        value={weeklyDate}
+        onChange={(e) => setWeeklyDate(e.target.value)}
+      />
+
+      <button onClick={handleWeekly}>{text.getWeeklyIncome}</button>
+
+      {weeklyData && !weeklyError && (
+        <div>
+          <p>Start: {weeklyData.start}</p>
+          <p>End: {weeklyData.end}</p>
+
+          <p>Total Income: {totalIncome}</p>
+          <p>Cash Total: {totalCash}</p>
+          <p>QRIS Total: {totalQris}</p>
+          <p>FNB Total: {totalFnb}</p>
+          <p>Total Rental: {totalRental}</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+
+function MonthlyIncomePage({
+  text,
+  monthlyDate,
+  setMonthlyDate,
+  handleMonthly,
+  monthlyError,
+  monthlyErrorMessage,
+  monthlyFinished,
+  monthlySuccessMessage,
+  monthlyData,
+}) {
+  const totalIncome = monthlyData?.result?.[0]?.total_income ?? 0;
+  const totalFnb = monthlyData?.result?.[1]?.fnb_total ?? 0;
+  const totalCash = monthlyData?.result?.[2]?.cash_total ?? 0;
+  const totalQris = monthlyData?.result?.[3]?.qris_total ?? 0;
+  const totalRental = monthlyData?.result?.[4]?.totalRental ?? 0;
+
+  return (
+    <>
+      {monthlyFinished && !monthlyError && <p>{monthlySuccessMessage}</p>}
+      {monthlyError && <p>{monthlyErrorMessage}</p>}
+
+      <input
+        type="date"
+        value={monthlyDate}
+        onChange={(e) => setMonthlyDate(e.target.value)}
+      />
+
+      <button onClick={handleMonthly}>{text.getMonthlyIncome}</button>
+
+      {monthlyData && !monthlyError && (
+        <div>
+          <p>Start: {monthlyData.start}</p>
+          <p>End: {monthlyData.end}</p>
+
+          <p>Total Income: {totalIncome}</p>
+          <p>Cash Total: {totalCash}</p>
+          <p>QRIS Total: {totalQris}</p>
+          <p>FNB Total: {totalFnb}</p>
+          <p>Total Rental: {totalRental}</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+
 
 
 
@@ -263,6 +373,23 @@ function Income() {
   const [dailySuccessMessage, setDailySuccessMessage] = useState("");
   const [dailyFinished, setDailyFinished] = useState(false);
   const [dailyData, setDailyData] = useState(null);
+
+  // weekly state
+  const [weeklyDate, setWeeklyDate] = useState("");
+  const [weeklyError, setWeeklyError] = useState(false);
+  const [weeklyErrorMessage, setWeeklyErrorMessage] = useState("");
+  const [weeklySuccessMessage, setWeeklySuccessMessage] = useState("");
+  const [weeklyFinished, setWeeklyFinished] = useState(false);
+  const [weeklyData, setWeeklyData] = useState(null);
+
+  // monthly state
+  const [monthlyDate, setMonthlyDate] = useState("");
+  const [monthlyError, setMonthlyError] = useState(false);
+  const [monthlyErrorMessage, setMonthlyErrorMessage] = useState("");
+  const [monthlySuccessMessage, setMonthlySuccessMessage] = useState("");
+  const [monthlyFinished, setMonthlyFinished] = useState(false);
+  const [monthlyData, setMonthlyData] = useState(null);
+
 
 
   const handleAdd = async () => {
@@ -371,6 +498,69 @@ function Income() {
     setDailySuccessMessage("Loaded daily income.");
   };
 
+  const handleWeekly = async () => {
+    setWeeklyFinished(false);
+    setWeeklyError(false);
+    setWeeklyErrorMessage("");
+    setWeeklySuccessMessage("");
+    setWeeklyData(null);
+
+    if (!weeklyDate) {
+      setWeeklyError(true);
+      setWeeklyErrorMessage(text.noWeeklyDateError);
+      setWeeklyFinished(true);
+      return;
+    }
+
+    const [y, m, d] = weeklyDate.split("-");
+    const dateForBackend = `${d}-${m}-${y}`;
+
+    const response = await Weekly(dateForBackend);
+
+    if (response?.error) {
+      setWeeklyError(true);
+      setWeeklyErrorMessage(response.message ?? "Something went wrong.");
+      setWeeklyFinished(true);
+      return;
+    }
+
+    setWeeklyData(response);
+    setWeeklyFinished(true);
+    setWeeklySuccessMessage(text.weeklySuccessMessage);
+  };
+
+  const handleMonthly = async () => {
+    setMonthlyFinished(false);
+    setMonthlyError(false);
+    setMonthlyErrorMessage("");
+    setMonthlySuccessMessage("");
+    setMonthlyData(null);
+
+    if (!monthlyDate) {
+      setMonthlyError(true);
+      setMonthlyErrorMessage(text.noMonthlyDateError);
+      setMonthlyFinished(true);
+      return;
+    }
+
+    const [y, m, d] = monthlyDate.split("-");
+    const dateForBackend = `${d}-${m}-${y}`;
+
+    const response = await Monthly(dateForBackend);
+
+    if (response?.error) {
+      setMonthlyError(true);
+      setMonthlyErrorMessage(response.message ?? "Something went wrong.");
+      setMonthlyFinished(true);
+      return;
+    }
+
+    setMonthlyData(response);
+    setMonthlyFinished(true);
+    setMonthlySuccessMessage(text.monthlySuccessMessage);
+  };
+
+
 
   return (
     <div className={style.container}>
@@ -431,6 +621,35 @@ function Income() {
           dailyData={dailyData}
         />
       )}
+
+      {view === views.weekly && (
+        <WeeklyIncomePage
+          text={text}
+          weeklyDate={weeklyDate}
+          setWeeklyDate={setWeeklyDate}
+          handleWeekly={handleWeekly}
+          weeklyError={weeklyError}
+          weeklyErrorMessage={weeklyErrorMessage}
+          weeklyFinished={weeklyFinished}
+          weeklySuccessMessage={weeklySuccessMessage}
+          weeklyData={weeklyData}
+        />
+      )}
+
+      {view === views.monthly && (
+        <MonthlyIncomePage
+          text={text}
+          monthlyDate={monthlyDate}
+          setMonthlyDate={setMonthlyDate}
+          handleMonthly={handleMonthly}
+          monthlyError={monthlyError}
+          monthlyErrorMessage={monthlyErrorMessage}
+          monthlyFinished={monthlyFinished}
+          monthlySuccessMessage={monthlySuccessMessage}
+          monthlyData={monthlyData}
+        />
+      )}
+
 
 
     </div>
