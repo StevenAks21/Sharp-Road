@@ -13,7 +13,28 @@ const views = {
   alltime: "alltime",
 };
 
+const TEXT = {
+  English: {
+    addIncome: "Add Income",
+    changeIncome: "Change Income",
+    getDailyIncome: "Get Daily Income",
+    getWeeklyIncome: "Get Weekly Income",
+    getMonthlyIncome: "Get Monthly Income",
+    getAllTimeIncome: "Get All Time Income",
+  }
+  ,
+  Indonesian: {
+    addIncome: "Tambah Pemasukan",
+    changeIncome: "Ubah Pemasukan",
+    getDailyIncome: "Lihat Pemasukan Harian",
+    getWeeklyIncome: "Lihat Pemasukan Mingguan",
+    getMonthlyIncome: "Lihat Pemasukan Bulanan",
+    getAllTimeIncome: "Lihat Pemasukan Sepanjang Waktu",
+  }
+}
+
 function Income() {
+  const [language, setLanguage] = useContext(languageContext);
   const [view, setView] = useState(views.add);
 
   //add income variables
@@ -30,9 +51,35 @@ function Income() {
     console.log(dateForBackend)
   };
 
+  const text = TEXT[language ?? "English"];
+
   return (
     <div>
       <Navbar />
+      <button onClick={() => setView(views.add)}>
+        {text.addIncome}
+      </button>
+
+      <button onClick={() => setView(views.change)}>
+        {text.changeIncome}
+      </button>
+
+      <button onClick={() => setView(views.daily)}>
+        {text.getDailyIncome}
+      </button>
+
+      <button onClick={() => setView(views.weekly)}>
+        {text.getWeeklyIncome}
+      </button>
+
+      <button onClick={() => setView(views.monthly)}>
+        {text.getMonthlyIncome}
+      </button>
+
+      <button onClick={() => setView(views.alltime)}>
+        {text.getAllTimeIncome}
+      </button>
+
       {view === views.add && (
         <>
           <input
@@ -43,9 +90,11 @@ function Income() {
             type="date"
           ></input>
 
-          <button onClick={handleAdd}></button>
+          <button onClick={handleAdd}>{text.addIncome}</button>
         </>
       )}
+
+      {view === views.change && <div>change income</div>}
     </div>
   );
 }
