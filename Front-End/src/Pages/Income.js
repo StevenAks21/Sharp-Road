@@ -4,6 +4,7 @@ import { languageContext } from "../Contexts";
 import style from "../Style/Income.module.css";
 import { Add } from "../Services/Income/Add";
 import { Change } from '../Services/Income/Change'
+import { Daily } from '../Services/Income/Daily'
 
 const views = {
   add: "add",
@@ -30,7 +31,11 @@ const TEXT = {
     addSuccessMessage: "Successfully added income",
 
     changeButton: 'Change Income',
-    changeSuccessMessage: 'Successfully changed income'
+    changeSuccessMessage: 'Successfully changed income',
+    dailyDate: "Date",
+    getDailyButton: "Get Daily Income",
+    dailySuccessMessage: "Daily income loaded",
+    noDailyDateError: "Please select a date.",
 
   },
   Indonesian: {
@@ -48,7 +53,11 @@ const TEXT = {
     addSuccessMessage: "Pemasukan berhasil terekam",
 
     changeButton: 'Ganti Pemasukan',
-    changeSuccessMessage: 'Berhasil mengubah pendapatan'
+    changeSuccessMessage: 'Berhasil mengubah pendapatan',
+    dailyDate: "Tanggal",
+    getDailyButton: "Lihat Pemasukan Harian",
+    dailySuccessMessage: "Pemasukan harian berhasil dimuat",
+    noDailyDateError: "Pilih tanggal dulu.",
   },
 };
 
@@ -179,6 +188,43 @@ function ChangeIncomePage({
   );
 }
 
+function DailyIncomePage({
+  text,
+  dailyDate,
+  setDailyDate,
+  handleDaily,
+  dailyError,
+  dailyErrorMessage,
+  dailyFinished,
+  dailySuccessMessage,
+  dailyData,
+}) {
+  return (
+    <>
+      {dailyFinished && !dailyError && <p>{dailySuccessMessage}</p>}
+      {dailyError && <p>{dailyErrorMessage}</p>}
+
+      <input
+        type="date"
+        value={dailyDate}
+        onChange={(e) => setDailyDate(e.target.value)}
+      />
+
+      <button onClick={handleDaily}>{text.getDailyIncome}</button>
+
+      {dailyData && (
+        <div>
+          <p>Cash: {dailyData.result.cash ?? 0}</p>
+          <p>FNB: {dailyData.result.fnb ?? 0}</p>
+          <p>QRIS: {dailyData.result.qris ?? 0}</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+
+
 
 function Income() {
   const [language] = useContext(languageContext);
@@ -209,6 +255,15 @@ function Income() {
   const [changeErrorMessage, setChangeErrorMessage] = useState("");
   const [changeSuccessMessage, setChangeSuccessMessage] = useState("");
   const [changeFinished, setChangeFinished] = useState(false);
+
+  // daily income state
+  const [dailyDate, setDailyDate] = useState("");
+  const [dailyError, setDailyError] = useState(false);
+  const [dailyErrorMessage, setDailyErrorMessage] = useState("");
+  const [dailySuccessMessage, setDailySuccessMessage] = useState("");
+  const [dailyFinished, setDailyFinished] = useState(false);
+  const [dailyData, setDailyData] = useState(null);
+
 
   const handleAdd = async () => {
     setAddFinished(false);
@@ -285,6 +340,38 @@ function Income() {
 
   }
 
+  const handleDaily = async () => {
+    setDailyFinished(false);
+    setDailyError(false);
+    setDailyErrorMessage("");
+    setDailySuccessMessage("");
+    setDailyData(null);
+
+    if (!dailyDate) {
+      setDailyError(true);
+      setDailyErrorMessage("Please select a date.");
+      setDailyFinished(true);
+      return;
+    }
+
+    const [y, m, d] = dailyDate.split("-");
+    const dateForBackend = `${d}-${m}-${y}`;
+
+    const response = await Daily(dateForBackend);
+
+    if (response?.error) {
+      setDailyError(true);
+      setDailyErrorMessage(response.message ?? "Something went wrong.");
+      setDailyFinished(true);
+      return;
+    }
+
+    setDailyData(response);
+    setDailyFinished(true);
+    setDailySuccessMessage("Loaded daily income.");
+  };
+
+
   return (
     <div className={style.container}>
       <Navbar />
@@ -330,6 +417,21 @@ function Income() {
           handleChange={handleChange}
         />
       )}
+
+      {view === views.daily && (
+        <DailyIncomePage
+          text={text}
+          dailyDate={dailyDate}
+          setDailyDate={setDailyDate}
+          handleDaily={handleDaily}
+          dailyError={dailyError}
+          dailyErrorMessage={dailyErrorMessage}
+          dailyFinished={dailyFinished}
+          dailySuccessMessage={dailySuccessMessage}
+          dailyData={dailyData}
+        />
+      )}
+
 
     </div>
   );
