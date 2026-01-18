@@ -1,13 +1,14 @@
+// Income.jsx
 import Navbar from "../Components/Navbar";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import { languageContext } from "../Contexts";
 import style from "../Style/Income.module.css";
 import { Add } from "../Services/Income/Add";
-import { Change } from '../Services/Income/Change'
-import { Daily } from '../Services/Income/Daily'
+import { Change } from "../Services/Income/Change";
+import { Daily } from "../Services/Income/Daily";
 import { Weekly } from "../Services/Income/Weekly";
 import { Monthly } from "../Services/Income/Monthly";
-
+import { Alltime } from "../Services/Income/Alltime";
 
 const views = {
   add: "add",
@@ -21,6 +22,8 @@ const views = {
 const TEXT = {
   English: {
     documentTitle: "Income Management",
+    title: "Income Management",
+    subtitle: "Track, update, and review income in a clean black and white dashboard.",
 
     addIncome: "Add Income",
     changeIncome: "Change Income",
@@ -28,13 +31,16 @@ const TEXT = {
     getWeeklyIncome: "Get Weekly Income",
     getMonthlyIncome: "Get Monthly Income",
     getAllTimeIncome: "Get All Time Income",
+
     cashAmount: "Cash Amount",
     fnbAmount: "FNB Amount",
     qrisAmount: "QRIS Amount",
+    notes: "Notes",
     addSuccessMessage: "Successfully added income",
 
-    changeButton: 'Change Income',
-    changeSuccessMessage: 'Successfully changed income',
+    changeButton: "Change Income",
+    changeSuccessMessage: "Successfully changed income",
+
     dailyDate: "Date",
     getDailyButton: "Get Daily Income",
     dailySuccessMessage: "Daily income loaded",
@@ -42,13 +48,25 @@ const TEXT = {
 
     weeklySuccessMessage: "Weekly income loaded",
     noWeeklyDateError: "Please select a date.",
+
     monthlySuccessMessage: "Monthly income loaded",
     noMonthlyDateError: "Please select a date.",
 
+    alltimeSuccessMessage: "All-time income loaded",
+    getAlltimeButton: "Get All Time Income",
 
+    helper: "Pick a view above to get started.",
+    totals: "Totals",
+    start: "Start",
+    end: "End",
+    totalIncome: "Total Income",
+    totalRental: "Total Rental",
+    records: "Records",
   },
   Indonesian: {
     documentTitle: "Manajemen Pemasukan",
+    title: "Manajemen Pemasukan",
+    subtitle: "Catat, ubah, dan lihat pemasukan dengan dashboard hitam putih yang rapi.",
 
     addIncome: "Tambah Pemasukan",
     changeIncome: "Ubah Pemasukan",
@@ -56,13 +74,16 @@ const TEXT = {
     getWeeklyIncome: "Lihat Pemasukan Mingguan",
     getMonthlyIncome: "Lihat Pemasukan Bulanan",
     getAllTimeIncome: "Lihat Pemasukan Sepanjang Waktu",
+
     cashAmount: "Jumlah Tunai",
     fnbAmount: "Jumlah FNB",
     qrisAmount: "Jumlah QRIS",
+    notes: "Catatan",
     addSuccessMessage: "Pemasukan berhasil terekam",
 
-    changeButton: 'Ganti Pemasukan',
-    changeSuccessMessage: 'Berhasil mengubah pendapatan',
+    changeButton: "Ganti Pemasukan",
+    changeSuccessMessage: "Berhasil mengubah pendapatan",
+
     dailyDate: "Tanggal",
     getDailyButton: "Lihat Pemasukan Harian",
     dailySuccessMessage: "Pemasukan harian berhasil dimuat",
@@ -70,22 +91,98 @@ const TEXT = {
 
     weeklySuccessMessage: "Pemasukan mingguan berhasil dimuat",
     noWeeklyDateError: "Pilih tanggal dulu.",
+
     monthlySuccessMessage: "Pemasukan bulanan berhasil dimuat",
     noMonthlyDateError: "Pilih tanggal dulu.",
 
+    alltimeSuccessMessage: "Pemasukan sepanjang waktu berhasil dimuat",
+    getAlltimeButton: "Lihat Pemasukan Sepanjang Waktu",
+
+    helper: "Pilih menu di atas untuk mulai.",
+    totals: "Ringkasan",
+    start: "Mulai",
+    end: "Sampai",
+    totalIncome: "Total Pemasukan",
+    totalRental: "Total Rental",
+    records: "Data",
   },
 };
 
-function ButtonViews({ text, setView }) {
+function ButtonViews({ text, view, setView }) {
+  const buttons = [
+    { key: views.add, label: text.addIncome },
+    { key: views.change, label: text.changeIncome },
+    { key: views.daily, label: text.getDailyIncome },
+    { key: views.weekly, label: text.getWeeklyIncome },
+    { key: views.monthly, label: text.getMonthlyIncome },
+    { key: views.alltime, label: text.getAllTimeIncome },
+  ];
+
   return (
-    <>
-      <button onClick={() => setView(views.add)}>{text.addIncome}</button>
-      <button onClick={() => setView(views.change)}>{text.changeIncome}</button>
-      <button onClick={() => setView(views.daily)}>{text.getDailyIncome}</button>
-      <button onClick={() => setView(views.weekly)}>{text.getWeeklyIncome}</button>
-      <button onClick={() => setView(views.monthly)}>{text.getMonthlyIncome}</button>
-      <button onClick={() => setView(views.alltime)}>{text.getAllTimeIncome}</button>
-    </>
+    <div className={style.buttonRow}>
+      {buttons.map((b) => (
+        <button
+          key={b.key}
+          className={`${style.button} ${view === b.key ? style.activeButton : ""}`}
+          onClick={() => setView(b.key)}
+          type="button"
+        >
+          {b.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function MessageBanner({ error, success }) {
+  if (error) return <p className={style.error}>{error}</p>;
+  if (success) return <p className={style.success}>{success}</p>;
+  return null;
+}
+
+function Card({ title, children }) {
+  return (
+    <div className={`${style.card} ${style.fadeInUp}`}>
+      <h3 className={style.cardTitle}>{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div className={style.field}>
+      <div className={style.label}>{label}</div>
+      {children}
+    </div>
+  );
+}
+
+function MetricCard({ title, items, pillLabel }) {
+  return (
+    <div className={`${style.employeeCard} ${style.fadeInUp}`}>
+      <div className={style.employeeHeader}>
+        <div className={style.employeeIdentity}>
+          <div className={style.employeeName}>{title}</div>
+          {pillLabel ? <div className={style.employeeMeta}>{pillLabel}</div> : null}
+        </div>
+        <div className={style.employeePill}>
+          <span className={style.pillLabel}>•</span>
+          <span className={style.mono}>B/W</span>
+        </div>
+      </div>
+
+      <div className={style.employeeDivider} />
+
+      <div className={style.employeeRows}>
+        {items.map((row) => (
+          <div className={style.employeeRow} key={row.key}>
+            <div className={style.employeeKey}>{row.key}</div>
+            <div className={`${style.employeeVal} ${style.mono}`}>{row.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -105,40 +202,60 @@ function AddIncomePage({
   addSuccessMessage,
   handleAdd,
 }) {
+  const success = addFinished && !addError ? addSuccessMessage : "";
+  const error = addError ? addErrorMessage : "";
+
   return (
-    <>
-      {addFinished && !addError && <p>{addSuccessMessage}</p>}
-      {addError && <p>{addErrorMessage}</p>}
+    <div className={style.content}>
+      <MessageBanner error={error} success={success} />
 
-      <input
-        type="date"
-        value={addDate}
-        onChange={(e) => setAddDate(e.target.value)}
-      />
+      <Card title={text.addIncome}>
+        <Field label={text.dailyDate}>
+          <input
+            className={style.input}
+            type="date"
+            value={addDate}
+            onChange={(e) => setAddDate(e.target.value)}
+          />
+        </Field>
 
-      <input
-        value={addCash}
-        onChange={(e) => setAddCash(e.target.value)}
-        placeholder={text.cashAmount}
-        inputMode="numeric"
-      />
+        <div className={style.grid}>
+          <Field label={text.cashAmount}>
+            <input
+              className={style.input}
+              value={addCash}
+              onChange={(e) => setAddCash(e.target.value)}
+              placeholder={text.cashAmount}
+              inputMode="numeric"
+            />
+          </Field>
 
-      <input
-        value={addFnb}
-        onChange={(e) => setAddFnb(e.target.value)}
-        placeholder={text.fnbAmount}
-        inputMode="numeric"
-      />
+          <Field label={text.fnbAmount}>
+            <input
+              className={style.input}
+              value={addFnb}
+              onChange={(e) => setAddFnb(e.target.value)}
+              placeholder={text.fnbAmount}
+              inputMode="numeric"
+            />
+          </Field>
 
-      <input
-        value={addQris}
-        onChange={(e) => setAddQris(e.target.value)}
-        placeholder={text.qrisAmount}
-        inputMode="numeric"
-      />
+          <Field label={text.qrisAmount}>
+            <input
+              className={style.input}
+              value={addQris}
+              onChange={(e) => setAddQris(e.target.value)}
+              placeholder={text.qrisAmount}
+              inputMode="numeric"
+            />
+          </Field>
+        </div>
 
-      <button onClick={handleAdd}>{text.addIncome}</button>
-    </>
+        <button className={style.primaryButton} onClick={handleAdd} type="button">
+          {text.addIncome}
+        </button>
+      </Card>
+    </div>
   );
 }
 
@@ -160,46 +277,69 @@ function ChangeIncomePage({
   changeFinished,
   changeSuccessMessage,
 }) {
+  const success = changeFinished && !changeError ? changeSuccessMessage : "";
+  const error = changeError ? changeErrorMessage : "";
+
   return (
-    <>
-      {changeFinished && !changeError && <p>{changeSuccessMessage}</p>}
-      {changeError && <p>{changeErrorMessage}</p>}
+    <div className={style.content}>
+      <MessageBanner error={error} success={success} />
 
-      <input
-        type="date"
-        value={changeDate}
-        onChange={(e) => setChangeDate(e.target.value)}
-      />
+      <Card title={text.changeIncome}>
+        <Field label={text.dailyDate}>
+          <input
+            className={style.input}
+            type="date"
+            value={changeDate}
+            onChange={(e) => setChangeDate(e.target.value)}
+          />
+        </Field>
 
-      <input
-        value={changeCash}
-        onChange={(e) => setChangeCash(e.target.value)}
-        placeholder={text.cashAmount}
-        inputMode="numeric"
-      />
+        <div className={style.grid}>
+          <Field label={text.cashAmount}>
+            <input
+              className={style.input}
+              value={changeCash}
+              onChange={(e) => setChangeCash(e.target.value)}
+              placeholder={text.cashAmount}
+              inputMode="numeric"
+            />
+          </Field>
 
-      <input
-        value={changeFnb}
-        onChange={(e) => setChangeFnb(e.target.value)}
-        placeholder={text.fnbAmount}
-        inputMode="numeric"
-      />
+          <Field label={text.fnbAmount}>
+            <input
+              className={style.input}
+              value={changeFnb}
+              onChange={(e) => setChangeFnb(e.target.value)}
+              placeholder={text.fnbAmount}
+              inputMode="numeric"
+            />
+          </Field>
 
-      <input
-        value={changeQris}
-        onChange={(e) => setChangeQris(e.target.value)}
-        placeholder={text.qrisAmount}
-        inputMode="numeric"
-      />
+          <Field label={text.qrisAmount}>
+            <input
+              className={style.input}
+              value={changeQris}
+              onChange={(e) => setChangeQris(e.target.value)}
+              placeholder={text.qrisAmount}
+              inputMode="numeric"
+            />
+          </Field>
+        </div>
 
-      <input
-        value={changeNote}
-        onChange={(e) => setChangeNote(e.target.value)}
-        placeholder="Note"
-      />
+        <Field label={text.notes}>
+          <input
+            className={style.input}
+            value={changeNote}
+            onChange={(e) => setChangeNote(e.target.value)}
+            placeholder={text.notes}
+          />
+        </Field>
 
-      <button onClick={handleChange}>{text.changeButton}</button>
-    </>
+        <button className={style.primaryButton} onClick={handleChange} type="button">
+          {text.changeButton}
+        </button>
+      </Card>
+    </div>
   );
 }
 
@@ -214,27 +354,43 @@ function DailyIncomePage({
   dailySuccessMessage,
   dailyData,
 }) {
+  const success = dailyFinished && !dailyError ? dailySuccessMessage : "";
+  const error = dailyError ? dailyErrorMessage : "";
+
   return (
-    <>
-      {dailyFinished && !dailyError && <p>{dailySuccessMessage}</p>}
-      {dailyError && <p>{dailyErrorMessage}</p>}
+    <div className={style.content}>
+      <MessageBanner error={error} success={success} />
 
-      <input
-        type="date"
-        value={dailyDate}
-        onChange={(e) => setDailyDate(e.target.value)}
-      />
+      <Card title={text.getDailyIncome}>
+        <Field label={text.dailyDate}>
+          <input
+            className={style.input}
+            type="date"
+            value={dailyDate}
+            onChange={(e) => setDailyDate(e.target.value)}
+          />
+        </Field>
 
-      <button onClick={handleDaily}>{text.getDailyIncome}</button>
+        <button className={style.primaryButton} onClick={handleDaily} type="button">
+          {text.getDailyButton}
+        </button>
+      </Card>
 
-      {dailyData && (
-        <div>
-          <p>Cash: {dailyData.result.cash ?? 0}</p>
-          <p>FNB: {dailyData.result.fnb ?? 0}</p>
-          <p>QRIS: {dailyData.result.qris ?? 0}</p>
+      {dailyData && !dailyError && (
+        <div className={`${style.resultCard} ${style.fadeInUp}`}>
+          <MetricCard
+            title={text.totals}
+            pillLabel={dailyData?.result?.date ? `${text.dailyDate}: ${dailyData.result.date}` : ""}
+            items={[
+              { key: text.cashAmount, value: dailyData.result.cash ?? 0 },
+              { key: text.fnbAmount, value: dailyData.result.fnb ?? 0 },
+              { key: text.qrisAmount, value: dailyData.result.qris ?? 0 },
+              { key: "Total", value: dailyData.result.total ?? (Number(dailyData.result.cash ?? 0) + Number(dailyData.result.qris ?? 0)) },
+            ]}
+          />
         </div>
       )}
-    </>
+    </div>
   );
 }
 
@@ -249,42 +405,54 @@ function WeeklyIncomePage({
   weeklySuccessMessage,
   weeklyData,
 }) {
-  // Backend: result = [totalIncome, totalFNB, totalCash, totalQris, totalRental, dailyReport]
+  const success = weeklyFinished && !weeklyError ? weeklySuccessMessage : "";
+  const error = weeklyError ? weeklyErrorMessage : "";
+
   const totalIncome = weeklyData?.result?.[0]?.total_income ?? 0;
   const totalFnb = weeklyData?.result?.[1]?.fnb_total ?? 0;
   const totalCash = weeklyData?.result?.[2]?.cash_total ?? 0;
   const totalQris = weeklyData?.result?.[3]?.qris_total ?? 0;
   const totalRental = weeklyData?.result?.[4]?.totalRental ?? 0;
+  const count = weeklyData?.result?.[5]?.daily_report?.length ?? 0;
 
   return (
-    <>
-      {weeklyFinished && !weeklyError && <p>{weeklySuccessMessage}</p>}
-      {weeklyError && <p>{weeklyErrorMessage}</p>}
+    <div className={style.content}>
+      <MessageBanner error={error} success={success} />
 
-      <input
-        type="date"
-        value={weeklyDate}
-        onChange={(e) => setWeeklyDate(e.target.value)}
-      />
+      <Card title={text.getWeeklyIncome}>
+        <Field label={text.dailyDate}>
+          <input
+            className={style.input}
+            type="date"
+            value={weeklyDate}
+            onChange={(e) => setWeeklyDate(e.target.value)}
+          />
+        </Field>
 
-      <button onClick={handleWeekly}>{text.getWeeklyIncome}</button>
+        <button className={style.primaryButton} onClick={handleWeekly} type="button">
+          {text.getWeeklyIncome}
+        </button>
+      </Card>
 
       {weeklyData && !weeklyError && (
-        <div>
-          <p>Start: {weeklyData.start}</p>
-          <p>End: {weeklyData.end}</p>
-
-          <p>Total Income: {totalIncome}</p>
-          <p>Cash Total: {totalCash}</p>
-          <p>QRIS Total: {totalQris}</p>
-          <p>FNB Total: {totalFnb}</p>
-          <p>Total Rental: {totalRental}</p>
+        <div className={`${style.resultCard} ${style.fadeInUp}`}>
+          <MetricCard
+            title={text.totals}
+            pillLabel={`${text.start}: ${weeklyData.start}  •  ${text.end}: ${weeklyData.end}`}
+            items={[
+              { key: text.totalIncome, value: totalIncome },
+              { key: text.cashAmount, value: totalCash },
+              { key: text.qrisAmount, value: totalQris },
+              { key: text.fnbAmount, value: totalFnb },
+              { key: text.totalRental, value: totalRental },
+              { key: text.records, value: count },
+            ]}
+          />
         </div>
       )}
-    </>
+    </div>
   );
 }
-
 
 function MonthlyIncomePage({
   text,
@@ -297,49 +465,99 @@ function MonthlyIncomePage({
   monthlySuccessMessage,
   monthlyData,
 }) {
+  const success = monthlyFinished && !monthlyError ? monthlySuccessMessage : "";
+  const error = monthlyError ? monthlyErrorMessage : "";
+
   const totalIncome = monthlyData?.result?.[0]?.total_income ?? 0;
   const totalFnb = monthlyData?.result?.[1]?.fnb_total ?? 0;
   const totalCash = monthlyData?.result?.[2]?.cash_total ?? 0;
   const totalQris = monthlyData?.result?.[3]?.qris_total ?? 0;
   const totalRental = monthlyData?.result?.[4]?.totalRental ?? 0;
+  const count = monthlyData?.result?.[5]?.daily_report?.length ?? 0;
 
   return (
-    <>
-      {monthlyFinished && !monthlyError && <p>{monthlySuccessMessage}</p>}
-      {monthlyError && <p>{monthlyErrorMessage}</p>}
+    <div className={style.content}>
+      <MessageBanner error={error} success={success} />
 
-      <input
-        type="date"
-        value={monthlyDate}
-        onChange={(e) => setMonthlyDate(e.target.value)}
-      />
+      <Card title={text.getMonthlyIncome}>
+        <Field label={text.dailyDate}>
+          <input
+            className={style.input}
+            type="date"
+            value={monthlyDate}
+            onChange={(e) => setMonthlyDate(e.target.value)}
+          />
+        </Field>
 
-      <button onClick={handleMonthly}>{text.getMonthlyIncome}</button>
+        <button className={style.primaryButton} onClick={handleMonthly} type="button">
+          {text.getMonthlyIncome}
+        </button>
+      </Card>
 
       {monthlyData && !monthlyError && (
-        <div>
-          <p>Start: {monthlyData.start}</p>
-          <p>End: {monthlyData.end}</p>
-
-          <p>Total Income: {totalIncome}</p>
-          <p>Cash Total: {totalCash}</p>
-          <p>QRIS Total: {totalQris}</p>
-          <p>FNB Total: {totalFnb}</p>
-          <p>Total Rental: {totalRental}</p>
+        <div className={`${style.resultCard} ${style.fadeInUp}`}>
+          <MetricCard
+            title={text.totals}
+            pillLabel={`${text.start}: ${monthlyData.start}  •  ${text.end}: ${monthlyData.end}`}
+            items={[
+              { key: text.totalIncome, value: totalIncome },
+              { key: text.cashAmount, value: totalCash },
+              { key: text.qrisAmount, value: totalQris },
+              { key: text.fnbAmount, value: totalFnb },
+              { key: text.totalRental, value: totalRental },
+              { key: text.records, value: count },
+            ]}
+          />
         </div>
       )}
-    </>
+    </div>
   );
 }
 
+function AlltimeIncomePage({
+  text,
+  handleAlltime,
+  alltimeError,
+  alltimeErrorMessage,
+  alltimeFinished,
+  alltimeSuccessMessage,
+  alltimeData,
+}) {
+  const success = alltimeFinished && !alltimeError ? alltimeSuccessMessage : "";
+  const error = alltimeError ? alltimeErrorMessage : "";
+  const records = alltimeData?.dailyReport?.length ?? 0;
+  const total = alltimeData?.alltime_income ?? 0;
 
+  return (
+    <div className={style.content}>
+      <MessageBanner error={error} success={success} />
 
+      <Card title={text.getAllTimeIncome}>
+        <button className={style.primaryButton} onClick={handleAlltime} type="button">
+          {text.getAlltimeButton}
+        </button>
+      </Card>
 
+      {alltimeData && !alltimeError && (
+        <div className={`${style.resultCard} ${style.fadeInUp}`}>
+          <MetricCard
+            title={text.totals}
+            pillLabel=""
+            items={[
+              { key: text.totalIncome, value: total },
+              { key: text.records, value: records },
+            ]}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Income() {
   const [language] = useContext(languageContext);
   const [view, setView] = useState(views.add);
-  const text = TEXT[language ?? "English"];
+  const text = useMemo(() => TEXT[language ?? "English"], [language]);
 
   useEffect(() => {
     document.title = text.documentTitle;
@@ -390,14 +608,18 @@ function Income() {
   const [monthlyFinished, setMonthlyFinished] = useState(false);
   const [monthlyData, setMonthlyData] = useState(null);
 
-
+  // alltime state
+  const [alltimeError, setAlltimeError] = useState(false);
+  const [alltimeErrorMessage, setAlltimeErrorMessage] = useState("");
+  const [alltimeSuccessMessage, setAlltimeSuccessMessage] = useState("");
+  const [alltimeFinished, setAlltimeFinished] = useState(false);
+  const [alltimeData, setAlltimeData] = useState(null);
 
   const handleAdd = async () => {
     setAddFinished(false);
     setAddError(false);
     setAddErrorMessage("");
     setAddSuccessMessage("");
-
 
     if (!addDate) return;
 
@@ -429,21 +651,19 @@ function Income() {
   };
 
   const handleChange = async () => {
-
     setChangeFinished(false);
     setChangeError(false);
     setChangeErrorMessage("");
     setChangeSuccessMessage("");
 
-
     if (!changeDate) return;
 
-    const [y, m, d] = changeDate.split('-')
-    const dateForBackend = `${d}-${m}-${y}`
+    const [y, m, d] = changeDate.split("-");
+    const dateForBackend = `${d}-${m}-${y}`;
 
-    const cash = Number(changeCash)
-    const fnb = Number(changeFnb)
-    const qris = Number(changeQris)
+    const cash = Number(changeCash);
+    const fnb = Number(changeFnb);
+    const qris = Number(changeQris);
 
     if (Number.isNaN(cash) || Number.isNaN(fnb) || Number.isNaN(qris)) {
       setChangeError(true);
@@ -452,8 +672,7 @@ function Income() {
       return;
     }
 
-
-    const response = await Change(dateForBackend, cash, fnb, qris, changeNote)
+    const response = await Change(dateForBackend, cash, fnb, qris, changeNote);
 
     if (response?.error) {
       setChangeError(true);
@@ -464,8 +683,7 @@ function Income() {
 
     setChangeFinished(true);
     setChangeSuccessMessage(text.changeSuccessMessage);
-
-  }
+  };
 
   const handleDaily = async () => {
     setDailyFinished(false);
@@ -476,7 +694,7 @@ function Income() {
 
     if (!dailyDate) {
       setDailyError(true);
-      setDailyErrorMessage("Please select a date.");
+      setDailyErrorMessage(text.noDailyDateError);
       setDailyFinished(true);
       return;
     }
@@ -495,7 +713,7 @@ function Income() {
 
     setDailyData(response);
     setDailyFinished(true);
-    setDailySuccessMessage("Loaded daily income.");
+    setDailySuccessMessage(text.dailySuccessMessage);
   };
 
   const handleWeekly = async () => {
@@ -560,13 +778,38 @@ function Income() {
     setMonthlySuccessMessage(text.monthlySuccessMessage);
   };
 
+  const handleAlltime = async () => {
+    setAlltimeFinished(false);
+    setAlltimeError(false);
+    setAlltimeErrorMessage("");
+    setAlltimeSuccessMessage("");
+    setAlltimeData(null);
 
+    const response = await Alltime();
+
+    if (response?.error) {
+      setAlltimeError(true);
+      setAlltimeErrorMessage(response.message ?? "Something went wrong.");
+      setAlltimeFinished(true);
+      return;
+    }
+
+    setAlltimeData(response);
+    setAlltimeFinished(true);
+    setAlltimeSuccessMessage(text.alltimeSuccessMessage);
+  };
 
   return (
     <div className={style.container}>
       <Navbar />
 
-      <ButtonViews text={text} setView={setView} />
+      <div className={style.header}>
+        <h1 className={style.title}>{text.title}</h1>
+        <p className={style.subtitle}>{text.subtitle}</p>
+        <p className={style.subtext}>{text.helper}</p>
+      </div>
+
+      <ButtonViews text={text} view={view} setView={setView} />
 
       {view === views.add && (
         <AddIncomePage
@@ -650,8 +893,17 @@ function Income() {
         />
       )}
 
-
-
+      {view === views.alltime && (
+        <AlltimeIncomePage
+          text={text}
+          handleAlltime={handleAlltime}
+          alltimeError={alltimeError}
+          alltimeErrorMessage={alltimeErrorMessage}
+          alltimeFinished={alltimeFinished}
+          alltimeSuccessMessage={alltimeSuccessMessage}
+          alltimeData={alltimeData}
+        />
+      )}
     </div>
   );
 }
