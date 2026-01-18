@@ -1,0 +1,406 @@
+.container {
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 2rem;
+}
+
+.container * {
+  box-sizing: border-box;
+}
+
+.header {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin: 0;
+  color: #ffffff;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+}
+
+.subtext {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 1rem 0 0.5rem;
+  text-align: center;
+}
+
+.error {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ff2d2d;
+  text-align: center;
+}
+
+.success {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #20c997;
+  text-align: center;
+}
+
+.buttonRow {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.button,
+.primaryButton,
+.primaryButtonDanger,
+.secondaryButton {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.button {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(-2px);
+}
+
+.activeButton {
+  background: #000000;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.content {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.secondaryButton {
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: #ffffff;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.countPill {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.countLabel {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 700;
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.cardTitle {
+  margin: 0 0 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: #000000;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #000;
+}
+
+.input {
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  background: #ffffff;
+  color: #000000;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s ease;
+}
+
+.input:focus {
+  transform: translateY(-1px);
+  border-color: rgba(0, 0, 0, 0.55);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 900;
+  border: 1px solid #000000;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+}
+
+.primaryButton:active {
+  transform: translateY(-2px);
+  background: #000000;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.primaryButtonDanger {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 900;
+  border: 1px solid #ff2d2d;
+  background: #ff2d2d;
+  color: #ffffff;
+}
+
+.primaryButtonDanger:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
+
+.primaryButtonDanger:active {
+  transform: translateY(-2px);
+}
+
+.primaryButton:disabled,
+.primaryButtonDanger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.grid {
+  width: 100%;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.employeeCard {
+  background: #ffffff;
+  color: #000000;
+  border-radius: 18px;
+  padding: 1.25rem 1.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.employeeCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+.employeeHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.employeeIdentity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.employeeName {
+  font-size: 1.05rem;
+  font-weight: 950;
+  letter-spacing: -0.2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employeeMeta {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.58);
+}
+
+.employeePill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: rgba(0, 0, 0, 0.03);
+  color: #000000;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.pillLabel {
+  color: rgba(0, 0, 0, 0.55);
+  font-weight: 800;
+}
+
+.employeeDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 1rem 0;
+}
+
+.employeeRows {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.employeeRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.employeeKey {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.employeeVal {
+  font-weight: 950;
+  font-size: 0.95rem;
+  letter-spacing: -0.2px;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.helperCard {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.resultCard {
+  width: 100%;
+  max-width: 520px;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 560px) {
+  .container {
+    padding: 1.25rem;
+  }
+
+  .button {
+    min-width: 150px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .countPill {
+    justify-content: center;
+  }
+}

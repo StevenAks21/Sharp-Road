@@ -2,7 +2,7 @@ import Navbar from "../Components/Navbar";
 import { useEffect, useContext, useState } from "react";
 import { languageContext } from "../Contexts";
 import { GetInfo } from "../Services/UserInfo/UserInfo";
-import styles from "../Style/UserInfo.module.css";
+import Style from "../Style/UserInfo.module.css";
 
 const TEXT = {
   English: {
@@ -15,7 +15,7 @@ const TEXT = {
     remaining: "Time remaining",
     expired: "Expired",
     title: "User Info",
-    subtitle: "Your login session details",
+    subtitle: "SharpRoad - User Info page",
   },
   Indonesian: {
     documentTitle: "SharpRoad - Halaman Info Pengguna",
@@ -27,7 +27,7 @@ const TEXT = {
     remaining: "Sisa waktu",
     expired: "Kedaluwarsa",
     title: "Info Pengguna",
-    subtitle: "Detail sesi login kamu",
+    subtitle: "SharpRoad - Halaman Info Pengguna",
   },
 };
 
@@ -49,6 +49,17 @@ function formatRemaining(ms, expiredLabel) {
   return `${dayPart}${pad2(hours)}h ${pad2(minutes)}m ${pad2(seconds)}s`;
 }
 
+function StatRow({ label, value, mono = false }) {
+  return (
+    <div className={Style.employeeRow}>
+      <span className={Style.employeeKey}>{label}</span>
+      <span className={`${Style.employeeVal} ${mono ? Style.mono : ""}`}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
 function UserInfo() {
   const [language] = useContext(languageContext);
   const text = TEXT[language ?? "English"];
@@ -60,7 +71,7 @@ function UserInfo() {
   const [timeRemaining, setTimeRemaining] = useState("-");
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     document.title = text.documentTitle;
@@ -72,7 +83,7 @@ function UserInfo() {
     async function fetchUser() {
       try {
         setLoading(true);
-        setError("");
+        setErrorMessage("");
 
         const fetchedUser = await GetInfo();
         if (!isMounted) return;
@@ -95,7 +106,7 @@ function UserInfo() {
           setTimeRemaining("-");
         }
       } catch (err) {
-        if (isMounted) setError(text.failed);
+        if (isMounted) setErrorMessage(text.failed);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -117,49 +128,43 @@ function UserInfo() {
 
     tick();
     const id = setInterval(tick, 1000);
+
     return () => clearInterval(id);
   }, [expiresAtMs, text.expired]);
 
   return (
-    <div className={styles.container}>
+    <div>
       <Navbar />
 
-      <div className={styles.header}>
-        <h1 className={styles.title}>{text.title}</h1>
-        <p className={styles.subtitle}>{text.subtitle}</p>
-      </div>
+      <div className={Style.container}>
+        <div className={Style.header}>
+          <h1 className={Style.title}>{text.title}</h1>
+          <p className={Style.subtitle}>{text.subtitle}</p>
+        </div>
 
-      <div className={styles.statusRow}>
-        {loading && <p className={styles.loading}>{text.loading}</p>}
-        {error && <p className={styles.error}>{error}</p>}
-      </div>
+        {loading && <p className={Style.subtext}>{text.loading}</p>}
+        {errorMessage && <p className={Style.error}>{errorMessage}</p>}
 
-      {!loading && !error && (
-        <div className={styles.card}>
-          <h2 className={styles.cardTitle}>
-            {text.welcome} <span className={styles.mono}>{user?.username ?? "-"}</span>
-          </h2>
+        {!loading && !errorMessage && (
+          <div className={Style.card}>
+            <p className={Style.cardTitle}>
+              {text.welcome}{" "}
+              <span className={Style.mono}>{user?.username ?? "-"}</span>
+            </p>
 
-          <div className={styles.rows}>
-            <div className={styles.row}>
-              <span className={styles.key}>{text.loggedIn}</span>
-              <span className={`${styles.val} ${styles.mono}`}>{loggedInTime} UTC</span>
-            </div>
-
-            <div className={styles.row}>
-              <span className={styles.key}>{text.expiry}</span>
-              <span className={`${styles.val} ${styles.mono}`}>{expiredTime} UTC</span>
-            </div>
-
-            <div className={styles.divider} />
-
-            <div className={styles.row}>
-              <span className={styles.key}>{text.remaining}</span>
-              <span className={`${styles.val} ${styles.mono}`}>{timeRemaining}</span>
+            <div className={Style.employeeRows}>
+              <StatRow
+                label={text.loggedIn}
+                value={`${loggedInTime} UTC`}
+                mono
+              />
+              <StatRow label={text.expiry} value={`${expiredTime} UTC`} mono />
+              <div className={Style.employeeDivider} />
+              <StatRow label={text.remaining} value={timeRemaining} mono />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
