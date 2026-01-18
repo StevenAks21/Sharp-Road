@@ -24,6 +24,7 @@ const employees = require("./routes/employees")
 const income = require(`./routes/income`)
 const auth = require(`./routes/auth`)
 const inventory = require(`./routes/inventory`)
+const bookings = require("./routes/bookings");
 
 // Routes
 app.use(`/income`, checkToken, income)
@@ -33,6 +34,8 @@ app.use(`/auth`, auth)
 app.use("/employees", checkToken, employees)
 
 app.use(`/inventory`, checkToken, inventory)
+
+app.use("/bookings", checkToken, bookings);
 
 // 404 handler
 app.use((req, res) => {
