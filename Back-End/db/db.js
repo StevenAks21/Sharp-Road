@@ -116,6 +116,24 @@ function init() {
     stock INTEGER NOT NULL,
     date_last_restock TEXT)`).run()
 
+  //Booking table
+  db.prepare(`
+  CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    resource_id INTEGER NOT NULL,
+    starttime TEXT NOT NULL,
+    endtime TEXT NOT NULL,
+    services TEXT NOT NULL
+  )
+`).run();
+
+  // Helpful index for overlap queries
+  db.prepare(`
+  CREATE INDEX IF NOT EXISTS idx_bookings_resource_time
+  ON bookings(resource_id, starttime, endtime)
+`).run();
+
   // Metadata table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS metadata (
