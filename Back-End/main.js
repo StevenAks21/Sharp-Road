@@ -1,52 +1,10 @@
-const express = require(`express`)
-const app = express()
-require(`dotenv`).config()
-const cors = require(`cors`)
+require("dotenv").config();
 
-app.use(cors({
-    // origin : process.env.ORIGIN,
-    methods: [`GET`, `POST`, `PUT`, `DELETE`],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}))
-const port = process.env.PORT
+// This file is for only STARTING the server
+const app = require("./app");
 
-// Get Middleware
-app.use(express.json())
-const checkToken = require(`./middleware/checkToken`)
+const PORT = Number(process.env.PORT) || 3001;
 
-// Health Check End Point
-app.get("/health", (req, res) => {
-    res.json({ ok: true });
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
-
-// Get All Routes
-const employees = require("./routes/employees")
-const income = require(`./routes/income`)
-const auth = require(`./routes/auth`)
-const inventory = require(`./routes/inventory`)
-const bookings = require("./routes/bookings");
-
-// Routes
-app.use(`/income`, checkToken, income)
-
-app.use(`/auth`, auth)
-
-app.use("/employees", checkToken, employees)
-
-app.use(`/inventory`, checkToken, inventory)
-
-app.use("/bookings", checkToken, bookings);
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ message: "Route not found" });
-});
-
-// Error handler
-const errorHandler = require("./middleware/errorHandler");
-app.use(errorHandler);
-
-// Server starts listening
-app.listen(port, () => {
-    console.log(`listening at port ${port}`)
-})

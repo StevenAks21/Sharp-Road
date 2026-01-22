@@ -1,3 +1,4 @@
 node_modules/
 .env
 Back-End/SharpRoad.db
+.DS_Store

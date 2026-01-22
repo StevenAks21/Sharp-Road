@@ -1,15 +1,5 @@
+import { apiFetch } from "../apiFetch";
+
 export async function GetAll() {
-  const fetchUrl = process.env.REACT_APP_SERVER_URL + "/inventory/getall";
-  const token = localStorage.getItem("token");
-
-  const args = {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  };
-
-  const response = await fetch(fetchUrl, args);
-  const data = await response.json();
-  return data;
+    return apiFetch("/inventory/getall");
 }
