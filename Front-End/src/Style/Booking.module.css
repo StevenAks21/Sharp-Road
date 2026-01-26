@@ -1,0 +1,327 @@
+.container {
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 2rem;
+}
+
+.container * {
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 1.2rem 0 1.2rem;
+  color: #ffffff;
+  text-align: center;
+}
+
+.subtext {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 1rem 0 0.5rem;
+  text-align: center;
+}
+
+.buttonRow {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+/* Base button style */
+.button,
+.primaryButton,
+.secondaryButton,
+.primaryButtonDanger {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.button {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+}
+
+.secondaryButton {
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+}
+
+.primaryButtonDanger {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1rem;
+}
+
+.button:hover,
+.primaryButton:hover,
+.secondaryButton:hover,
+.primaryButtonDanger:hover {
+  transform: translateY(-1px);
+}
+
+.button:active,
+.primaryButton:active,
+.secondaryButton:active,
+.primaryButtonDanger:active {
+  transform: translateY(-2px);
+  background: #000000;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.08);
+}
+
+.activeButton {
+  transform: translateY(-2px);
+  background: #000000;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.08);
+}
+
+.primaryButton:disabled,
+.primaryButtonDanger:disabled,
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ff2d2d;
+  text-align: center;
+}
+
+.success {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1db954;
+  text-align: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toolbar {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.countPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+}
+
+.countLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 1.5rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0 0 1.25rem;
+  text-align: center;
+  color: #000000;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  background: #ffffff;
+  color: #000000;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+.select {
+  padding: 0.8rem 1rem;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  background: #ffffff;
+  color: #000000;
+}
+
+.helperCard {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.grid {
+  width: 100%;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Booking cards */
+.bookingCard {
+  background: #ffffff;
+  color: #000000;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #000000;
+}
+
+.bookingHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bookingName {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.bookingMeta {
+  font-size: 0.9rem;
+  color: #444;
+  margin-top: 4px;
+}
+
+.bookingPill {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  white-space: nowrap;
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.pillLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.bookingDivider {
+  height: 1px;
+  background: #000000;
+  opacity: 0.12;
+  margin: 1rem 0;
+}
+
+.bookingRows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.bookingRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bookingKey {
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.bookingVal {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.resultCard {
+  width: 100%;
+  max-width: 520px;
+  margin-top: 1.5rem;
+}
